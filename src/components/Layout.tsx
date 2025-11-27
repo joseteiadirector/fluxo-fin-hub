@@ -40,7 +40,7 @@ const Layout = ({ children, modoTrabalho, setModoTrabalho }: LayoutProps) => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Wallet className="h-6 w-6 text-primary" />
-              <h1 className="text-xl font-bold">Workflow</h1>
+              <h1 className="text-xl font-bold">Équilibra</h1>
             </div>
             
             {/* Toggle Trabalho/Pessoal */}
