@@ -40,7 +40,7 @@ const CashbackModal = ({ open, onClose }: CashbackModalProps) => {
       .select("*")
       .eq("user_id", user?.id)
       .eq("tipo", "entrada")
-      .eq("categoria", "cashback")
+      .ilike("categoria", "%cashback%")
       .order("data", { ascending: false });
 
     if (!error && data) {

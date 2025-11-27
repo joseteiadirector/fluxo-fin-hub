@@ -1,16 +1,75 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 import { CreditCard, Smartphone, Gift, ArrowRight, Coins, Shield, PiggyBank, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import PixModal from "@/components/servicos/PixModal";
+import RecargaModal from "@/components/servicos/RecargaModal";
+import BeneficiosModal from "@/components/servicos/BeneficiosModal";
 import CashbackModal from "@/components/servicos/CashbackModal";
 import SegurosModal from "@/components/servicos/SegurosModal";
 import EmprestimosModal from "@/components/servicos/EmprestimosModal";
 
+interface ServiceLog {
+  id: string;
+  criado_em: string;
+  tipo_servico: string;
+  valor: number;
+  detalhes: any;
+}
+
 const Servicos = () => {
   const [selectedServico, setSelectedServico] = useState<string | null>(null);
+  const [historico, setHistorico] = useState<ServiceLog[]>([]);
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      fetchHistorico();
+    }
+  }, [user]);
+
+  const fetchHistorico = async () => {
+    const { data, error } = await supabase
+      .from("services_logs")
+      .select("*")
+      .eq("user_id", user?.id)
+      .order("criado_em", { ascending: false })
+      .limit(10);
+
+    if (!error && data) {
+      setHistorico(data as ServiceLog[]);
+    }
+  };
+
+  const handleServicoSuccess = () => {
+    fetchHistorico(); // Atualizar histórico após operação
+  };
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    }).format(value);
+  };
+
+  const getServiceIcon = (tipo: string) => {
+    switch (tipo) {
+      case "PIX": return <CreditCard className="h-4 w-4" />;
+      case "Recarga": return <Smartphone className="h-4 w-4" />;
+      case "Beneficios": return <Gift className="h-4 w-4" />;
+      case "Cashback": return <Coins className="h-4 w-4" />;
+      case "Seguros": return <Shield className="h-4 w-4" />;
+      case "Emprestimo": return <PiggyBank className="h-4 w-4" />;
+      default: return <ArrowRight className="h-4 w-4" />;
+    }
+  };
 
   const servicos = [
     {
@@ -95,36 +154,30 @@ const Servicos = () => {
       </div>
 
       {/* Modais dos Serviços */}
+      <PixModal 
+        open={selectedServico === "pix"} 
+        onClose={() => { setSelectedServico(null); handleServicoSuccess(); }} 
+      />
+      <RecargaModal 
+        open={selectedServico === "recarga"} 
+        onClose={() => { setSelectedServico(null); handleServicoSuccess(); }} 
+      />
+      <BeneficiosModal 
+        open={selectedServico === "beneficios"} 
+        onClose={() => { setSelectedServico(null); handleServicoSuccess(); }} 
+      />
       <CashbackModal 
         open={selectedServico === "cashback"} 
-        onClose={() => setSelectedServico(null)} 
+        onClose={() => { setSelectedServico(null); handleServicoSuccess(); }} 
       />
       <SegurosModal 
         open={selectedServico === "seguros"} 
-        onClose={() => setSelectedServico(null)} 
+        onClose={() => { setSelectedServico(null); handleServicoSuccess(); }} 
       />
       <EmprestimosModal 
         open={selectedServico === "emprestimos"} 
-        onClose={() => setSelectedServico(null)} 
+        onClose={() => { setSelectedServico(null); handleServicoSuccess(); }} 
       />
-
-      {/* Modal genérico para serviços não implementados */}
-      <Dialog open={selectedServico === "pix" || selectedServico === "recarga" || selectedServico === "beneficios"} onOpenChange={(open) => !open && setSelectedServico(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Serviço em Desenvolvimento</DialogTitle>
-            <DialogDescription>
-              Este serviço está em desenvolvimento e estará disponível em breve.
-            </DialogDescription>
-          </DialogHeader>
-          <p className="text-muted-foreground">
-            Por enquanto, experimente os serviços de <strong>Cashback</strong>, <strong>Seguros</strong> e <strong>Empréstimos</strong> que estão totalmente funcionais para demonstração!
-          </p>
-          <Button onClick={() => setSelectedServico(null)}>
-            Entendido
-          </Button>
-        </DialogContent>
-      </Dialog>
 
       {/* Histórico de Serviços */}
       <Card>
@@ -133,9 +186,36 @@ const Servicos = () => {
           <CardDescription>Suas últimas operações de serviços</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-center text-muted-foreground py-8">
-            Nenhuma operação realizada ainda.
-          </p>
+          {historico.length === 0 ? (
+            <p className="text-center text-muted-foreground py-8">
+              Nenhuma operação realizada ainda.
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {historico.map((log) => (
+                <Card key={log.id} className="border-muted">
+                  <CardContent className="py-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                          {getServiceIcon(log.tipo_servico)}
+                        </div>
+                        <div>
+                          <p className="font-medium">{log.tipo_servico}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {format(new Date(log.criado_em), "d 'de' MMM 'às' HH:mm", { locale: ptBR })}
+                          </p>
+                        </div>
+                      </div>
+                      <Badge variant="outline" className="text-primary border-primary">
+                        {formatCurrency(log.valor)}
+                      </Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
