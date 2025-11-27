@@ -2,10 +2,9 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Plus, TrendingUp, TrendingDown, Settings, Info } from "lucide-react";
+import { Plus, TrendingUp, TrendingDown, Info } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -28,7 +27,6 @@ const Extrato = ({ modoTrabalho }: ExtratoProps) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
@@ -78,41 +76,25 @@ const Extrato = ({ modoTrabalho }: ExtratoProps) => {
       {loading ? (
         <div className="text-center py-12">Carregando transações...</div>
       ) : transactions.length === 0 ? (
-        <div className="space-y-4">
-          <Alert>
-            <Info className="h-4 w-4" />
-            <AlertDescription>
-              <p className="font-semibold mb-2">💡 Nenhuma transação encontrada em modo {modoTrabalho ? 'Trabalho' : 'Pessoal'}</p>
-              <p className="text-sm mb-3">Para visualizar suas transações, você precisa primeiro adicionar dados de exemplo.</p>
-              <Button 
-                onClick={() => navigate('/demo-setup')} 
-                className="gap-2"
-                variant="default"
-              >
-                <Settings className="h-4 w-4" />
-                Ir para Configuração Demo
+        <Card>
+          <CardHeader>
+            <CardTitle>Nenhuma transação encontrada</CardTitle>
+            <CardDescription>
+              Comece adicionando suas primeiras transações em modo {modoTrabalho ? 'Trabalho' : 'Pessoal'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="py-8 text-center">
+              <p className="text-muted-foreground mb-4">
+                Suas transações aparecerão aqui assim que você começar a usar o app.
+              </p>
+              <Button className="gap-2">
+                <Plus className="h-4 w-4" />
+                Adicionar Transação
               </Button>
-            </AlertDescription>
-          </Alert>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>O que é o Extrato?</CardTitle>
-              <CardDescription>
-                Visualize todas suas transações financeiras de forma organizada e categorizada automaticamente
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>✓ Histórico completo de receitas e despesas</li>
-                <li>✓ Categorização automática por tipo de gasto</li>
-                <li>✓ Filtro inteligente por modo (Pessoal/Trabalho)</li>
-                <li>✓ Organização cronológica com data e hora</li>
-                <li>✓ Visualização clara com cores para entradas (+) e saídas (-)</li>
-              </ul>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
       ) : (
         <div className="space-y-3">
           {transactions.map((transaction) => (

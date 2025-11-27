@@ -11,7 +11,6 @@ import Auth from "./pages/Auth";
 import Extrato from "./pages/Extrato";
 import Servicos from "./pages/Servicos";
 import Insights from "./pages/Insights";
-import DemoSetup from "./pages/DemoSetup";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -64,14 +63,6 @@ const App = () => {
                   <Layout modoTrabalho={modoTrabalho} setModoTrabalho={setModoTrabalho}>
                     <Insights modoTrabalho={modoTrabalho} />
                   </Layout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/demo-setup"
-              element={
-                <ProtectedRoute>
-                  <DemoSetup />
                 </ProtectedRoute>
               }
             />

@@ -2,15 +2,13 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, TrendingUp, Info, RefreshCw, Settings } from "lucide-react";
+import { AlertTriangle, TrendingUp, Info, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { InsightsEngine } from "@/utils/insightsEngine";
 import { toast } from "sonner";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface Insight {
   id: string;
@@ -32,7 +30,6 @@ const Insights = ({ modoTrabalho }: InsightsProps) => {
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const { user } = useAuth();
-  const navigate = useNavigate();
   const insightsEngine = new InsightsEngine();
 
   useEffect(() => {
@@ -152,59 +149,13 @@ const Insights = ({ modoTrabalho }: InsightsProps) => {
       {loading ? (
         <div className="text-center py-12">Carregando insights...</div>
       ) : insights.length === 0 ? (
-        <div className="space-y-4">
-          <Alert>
-            <Info className="h-4 w-4" />
-            <AlertDescription>
-              <p className="font-semibold mb-2">🧠 Nenhum insight gerado ainda</p>
-              <p className="text-sm mb-3">Os insights são gerados automaticamente com base nas suas transações. Para começar, adicione dados de exemplo e clique em "Gerar Insights".</p>
-              <div className="flex gap-2">
-                <Button 
-                  onClick={() => navigate('/demo-setup')} 
-                  className="gap-2"
-                  variant="default"
-                >
-                  <Settings className="h-4 w-4" />
-                  Configurar Dados Demo
-                </Button>
-                <Button 
-                  onClick={generateNewInsights}
-                  disabled={generating}
-                  variant="outline"
-                  className="gap-2"
-                >
-                  <RefreshCw className={`h-4 w-4 ${generating ? 'animate-spin' : ''}`} />
-                  {generating ? "Gerando..." : "Gerar Insights"}
-                </Button>
-              </div>
-            </AlertDescription>
-          </Alert>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>O que são Insights Inteligentes?</CardTitle>
-              <CardDescription>
-                Análise automática com 3 motores de IA para entender seus padrões financeiros
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <h4 className="font-semibold text-sm">🔮 Regressão Linear</h4>
-                  <p className="text-sm text-muted-foreground">Prevê seu saldo no final do mês com base no histórico de gastos diários</p>
-                </div>
-                <div className="space-y-2">
-                  <h4 className="font-semibold text-sm">🌳 Árvore de Decisão</h4>
-                  <p className="text-sm text-muted-foreground">Identifica automaticamente padrões de risco, oportunidades de economia e categorias de gasto elevadas</p>
-                </div>
-                <div className="space-y-2">
-                  <h4 className="font-semibold text-sm">📊 Heurísticas</h4>
-                  <p className="text-sm text-muted-foreground">Detecta anomalias como gastos frequentes, crescimento rápido em categorias e picos de fim de semana</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        <Card>
+          <CardContent className="py-12 text-center">
+            <p className="text-muted-foreground">
+              Nenhum insight gerado ainda. Continue usando o app para receber análises automáticas.
+            </p>
+          </CardContent>
+        </Card>
       ) : (
         <div className="space-y-4">
           {insights.map((insight) => (
