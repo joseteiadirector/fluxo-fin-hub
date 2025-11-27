@@ -78,7 +78,7 @@ const Auth = () => {
         backgroundRepeat: 'no-repeat'
       }}
     >
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent from-50% to-background/90" />
+      
       <Card className="w-full max-w-md relative z-10 shadow-2xl mr-8 lg:mr-16 bg-background">
         <CardHeader className="space-y-3 text-center">
           <div className="mx-auto h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
