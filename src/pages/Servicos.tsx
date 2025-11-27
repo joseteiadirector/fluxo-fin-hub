@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CreditCard, Smartphone, Gift, ArrowRight, Coins, Shield, PiggyBank, ArrowLeft, Link2 } from "lucide-react";
+import { CreditCard, Smartphone, Gift, ArrowRight, Coins, Shield, PiggyBank, ArrowLeft, Link2, Trash2 } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,6 +29,7 @@ interface ServiceLog {
 const Servicos = () => {
   const [selectedServico, setSelectedServico] = useState<string | null>(null);
   const [historico, setHistorico] = useState<ServiceLog[]>([]);
+  const [deleting, setDeleting] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -51,6 +54,26 @@ const Servicos = () => {
 
   const handleServicoSuccess = () => {
     fetchHistorico(); // Atualizar histórico após operação
+  };
+
+  const clearHistorico = async () => {
+    setDeleting(true);
+    try {
+      const { error } = await supabase
+        .from("services_logs")
+        .delete()
+        .eq("user_id", user?.id);
+
+      if (error) throw error;
+
+      toast.success("Histórico limpo com sucesso!");
+      setHistorico([]);
+    } catch (error) {
+      console.error("Erro ao limpar histórico:", error);
+      toast.error("Erro ao limpar histórico");
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const formatCurrency = (value: number) => {
@@ -195,8 +218,39 @@ const Servicos = () => {
       {/* Histórico de Serviços */}
       <Card>
         <CardHeader>
-          <CardTitle>Histórico Recente</CardTitle>
-          <CardDescription>Suas últimas operações de serviços</CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Histórico Recente</CardTitle>
+              <CardDescription>Suas últimas operações de serviços</CardDescription>
+            </div>
+            {historico.length > 0 && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" size="sm" disabled={deleting}>
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    {deleting ? "Limpando..." : "Limpar Histórico"}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Limpar histórico de serviços?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Esta ação não pode ser desfeita. Isso irá remover permanentemente todo o histórico de operações de serviços (PIX, Recarga, Benefícios, etc.).
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={clearHistorico}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      Sim, limpar histórico
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           {historico.length === 0 ? (
