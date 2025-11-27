@@ -150,11 +150,25 @@ export const ChatBot = ({ onOpenService }: ChatBotProps) => {
         content: msg.content
       }));
 
-      const { data, error } = await supabase.functions.invoke("chatbot", {
-        body: { message: input, conversationHistory }
-      });
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chatbot`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${session?.access_token}`,
+          },
+          body: JSON.stringify({ message: input, conversationHistory }),
+        }
+      );
 
-      if (error) throw error;
+      if (!response.ok) {
+        throw new Error("Erro ao enviar mensagem");
+      }
+
+      const data = await response.json();
 
       const assistantMessage: Message = {
         role: "assistant",
