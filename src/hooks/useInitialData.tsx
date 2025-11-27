@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { InsightsEngine } from "@/utils/insightsEngine";
 
 export const useInitialData = () => {
   const { user } = useAuth();
@@ -276,10 +275,17 @@ export const useInitialData = () => {
         .update({ saldo_atual: saldoAtual })
         .eq("id", accountId);
 
-      // Gerar insights automaticamente
-      const insightsEngine = new InsightsEngine();
-      await insightsEngine.generateInsights(user.id, "pessoal");
-      await insightsEngine.generateInsights(user.id, "trabalho");
+      // Gerar insights iniciais automaticamente usando edge function
+      try {
+        await supabase.functions.invoke('generate-insights', {
+          body: { userId: user.id, modo: "pessoal" }
+        });
+        await supabase.functions.invoke('generate-insights', {
+          body: { userId: user.id, modo: "trabalho" }
+        });
+      } catch (error) {
+        console.error("Erro ao gerar insights iniciais:", error);
+      }
 
       console.log("✅ Dados iniciais populados com sucesso!");
     } catch (error) {

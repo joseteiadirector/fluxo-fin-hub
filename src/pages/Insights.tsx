@@ -8,7 +8,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { InsightsEngine } from "@/utils/insightsEngine";
 import { toast } from "sonner";
 
 interface Insight {
@@ -32,7 +31,6 @@ const Insights = ({ modoTrabalho }: InsightsProps) => {
   const [generating, setGenerating] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
-  const insightsEngine = new InsightsEngine();
 
   useEffect(() => {
     if (user) {
@@ -63,16 +61,36 @@ const Insights = ({ modoTrabalho }: InsightsProps) => {
     if (!user) return;
     
     setGenerating(true);
-    toast.info("Analisando seus padrões de gastos...");
+    toast.info("Analisando seus padrões de gastos com IA...");
     
     try {
       const modo = modoTrabalho ? "trabalho" : "pessoal";
-      await insightsEngine.generateInsights(user.id, modo);
-      toast.success("Novos insights gerados com sucesso!");
+      
+      const { data, error } = await supabase.functions.invoke('generate-insights', {
+        body: { userId: user.id, modo }
+      });
+
+      if (error) {
+        console.error("Error invoking function:", error);
+        throw error;
+      }
+
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      toast.success(`${data.count} novos insights gerados com IA!`);
       await fetchInsights();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error generating insights:", error);
-      toast.error("Erro ao gerar insights");
+      
+      if (error.message?.includes("429") || error.message?.includes("Limite")) {
+        toast.error("Muitas requisições. Aguarde alguns segundos e tente novamente.");
+      } else if (error.message?.includes("402") || error.message?.includes("Créditos")) {
+        toast.error("Créditos insuficientes. Configure créditos no workspace.");
+      } else {
+        toast.error("Erro ao gerar insights. Tente novamente.");
+      }
     } finally {
       setGenerating(false);
     }
