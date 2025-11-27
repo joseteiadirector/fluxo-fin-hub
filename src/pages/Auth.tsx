@@ -71,7 +71,7 @@ const Auth = () => {
 
   return (
     <div 
-      className="min-h-screen flex items-center justify-between p-8 lg:p-16 relative"
+      className="min-h-screen flex items-center justify-center p-8 lg:p-16 relative"
       style={{
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
@@ -79,30 +79,21 @@ const Auth = () => {
         backgroundRepeat: 'no-repeat'
       }}
     >
-      {/* Branding à esquerda */}
-      <div className="flex-1 z-10 relative h-full flex flex-col justify-between py-16">
-        {/* Título principal centralizado no topo */}
-        <div className="flex items-center justify-center gap-3">
-          <div className="h-16 w-16 rounded-full bg-primary/20 backdrop-blur-sm flex items-center justify-center">
-            <Wallet className="h-8 w-8 text-primary" />
-          </div>
-          <h1 className="text-6xl lg:text-7xl font-bold text-white drop-shadow-lg">Équilibra</h1>
+      {/* Branding centralizado */}
+      <div className="flex flex-col items-center justify-center text-center gap-4 z-10">
+        <div className="h-16 w-16 rounded-full bg-primary/20 backdrop-blur-sm flex items-center justify-center">
+          <Wallet className="h-8 w-8 text-primary" />
         </div>
-        
-        {/* Slogan no canto inferior direito */}
-        <div className="flex justify-end items-end">
-          <div className="space-y-2 text-right max-w-md pr-8">
-            <p className="text-xl lg:text-2xl text-white font-medium drop-shadow-md">
-              Seu assistente financeiro universitário
-            </p>
-            <p className="text-base text-white/90 drop-shadow-md">
-              Equilibrando trabalho, estudo e vida
-            </p>
-          </div>
-        </div>
-        
+        <h1 className="text-5xl lg:text-6xl font-bold text-white drop-shadow-lg">Équilibra</h1>
+        <p className="text-2xl lg:text-3xl text-white font-medium drop-shadow-md">
+          Seu assistente financeiro universitário
+        </p>
+        <p className="text-lg text-white/90 drop-shadow-md max-w-xl">
+          Equilibrando trabalho, estudo e vida. Gerencie suas finanças com inteligência.
+        </p>
+
         {!showForm && (
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-4">
+          <div className="flex gap-4 pt-2">
             <Button 
               size="lg" 
               onClick={() => { setShowForm(true); setIsSignUp(false); }}
@@ -122,24 +113,24 @@ const Auth = () => {
         )}
       </div>
 
-      {/* Formulário à direita */}
+      {/* Formulário sobreposto quando aberto */}
       {showForm && (
-        <Card className="w-full max-w-md relative z-10 shadow-2xl bg-background animate-in slide-in-from-right">
-        <CardHeader className="space-y-3">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-2xl">{isSignUp ? "Criar Conta" : "Entrar"}</CardTitle>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={() => setShowForm(false)}
-            >
-              <X className="h-5 w-5" />
-            </Button>
-          </div>
-          <CardDescription>
-            {isSignUp ? "Crie sua conta no Équilibra" : "Acesse sua conta"}
-          </CardDescription>
-        </CardHeader>
+        <Card className="w-full max-w-md absolute right-8 lg:right-16 bg-background shadow-2xl animate-enter">
+          <CardHeader className="space-y-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-2xl">{isSignUp ? "Criar Conta" : "Entrar"}</CardTitle>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => setShowForm(false)}
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+            <CardDescription>
+              {isSignUp ? "Crie sua conta no Équilibra" : "Acesse sua conta"}
+            </CardDescription>
+          </CardHeader>
         <CardContent>
           {isSignUp ? (
             <form onSubmit={handleSignUp} className="space-y-4">
