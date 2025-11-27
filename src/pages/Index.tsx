@@ -11,6 +11,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { toast } from "sonner";
 import { useTheme } from "next-themes";
+import { FinancialMoodCard } from "@/components/FinancialMoodCard";
 
 interface DashboardProps {
   modoTrabalho: boolean;
@@ -230,6 +231,9 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
           Bem-vindo ao seu assistente financeiro inteligente
         </p>
       </div>
+
+      {/* Análise de IA Generativa */}
+      <FinancialMoodCard />
 
       {/* Cards de Resumo */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
