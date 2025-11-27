@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.chatbot]
 verify_jwt = true
+
+[functions.analyze-financial-mood]
+verify_jwt = true
