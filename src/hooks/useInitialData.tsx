@@ -16,6 +16,34 @@ export const useInitialData = () => {
 
   const checkAndInitializeData = async () => {
     try {
+      // SEMPRE garantir que o usuário tem conta primeiro
+      let { data: accounts } = await supabase
+        .from("accounts")
+        .select("id, saldo_atual")
+        .eq("user_id", user?.id)
+        .limit(1);
+
+      // Se não existe conta, criar uma
+      if (!accounts || accounts.length === 0) {
+        const { data: newAccount, error: accountError } = await supabase
+          .from("accounts")
+          .insert({
+            user_id: user!.id,
+            nome_da_conta: "Conta Principal",
+            tipo_conta: "principal",
+            saldo_atual: 0
+          })
+          .select()
+          .single();
+
+        if (accountError) {
+          console.error("Erro ao criar conta:", accountError);
+          setLoading(false);
+          return;
+        }
+        accounts = [newAccount];
+      }
+
       // Verificar se usuário já tem transações
       const { data: transactions } = await supabase
         .from("transactions")
@@ -24,9 +52,14 @@ export const useInitialData = () => {
         .limit(1);
 
       if (!transactions || transactions.length === 0) {
-        // Usuário novo - popular com dados iniciais
+        // Popular com dados de demonstração
         await populateInitialData();
         setHasData(true);
+        
+        // Mostrar mensagem explicativa
+        setTimeout(() => {
+          console.log("✅ Protótipo inicializado com dados fictícios para demonstração!");
+        }, 1000);
       } else {
         setHasData(true);
       }
