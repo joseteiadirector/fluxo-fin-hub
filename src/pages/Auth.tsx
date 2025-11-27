@@ -80,7 +80,7 @@ const Auth = () => {
       }}
     >
       {/* Branding centralizado */}
-      <div className="flex flex-col items-center justify-center text-center gap-4 z-10">
+      <div className="flex flex-col items-center justify-center text-center gap-4 z-10 mt-16 lg:mt-24">
         <div className="h-16 w-16 rounded-full bg-primary/20 backdrop-blur-sm flex items-center justify-center">
           <Wallet className="h-8 w-8 text-primary" />
         </div>
