@@ -153,6 +153,57 @@ const Insights = ({ modoTrabalho }: InsightsProps) => {
         </div>
       </div>
 
+      {/* Explicação dos Sistemas de IA */}
+      <Card className="border-primary/20 bg-primary/5">
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <TrendingUp className="w-5 h-5" />
+            Sistemas de Inteligência Artificial
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            Équilibra utiliza três sistemas de IA distintos trabalhando em conjunto para gerar insights personalizados:
+          </p>
+          <div className="grid gap-3 text-sm">
+            <div className="p-3 rounded-lg bg-background/50 border">
+              <div className="flex items-center gap-2 mb-1">
+                <Badge variant="secondary" className="text-xs">Regressão Linear</Badge>
+                <span className="text-xs text-muted-foreground">Sistema Preditivo</span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Analisa histórico de gastos para calcular tendências e projetar saldo futuro usando fórmula matemática (y = mx + b). 
+                Prevê se você terminará o mês no azul ou vermelho baseado no padrão atual.
+              </p>
+            </div>
+            <div className="p-3 rounded-lg bg-background/50 border">
+              <div className="flex items-center gap-2 mb-1">
+                <Badge variant="secondary" className="text-xs">Árvore de Decisão</Badge>
+                <span className="text-xs text-muted-foreground">Sistema Classificador</span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Classifica padrões complexos analisando múltiplos critérios (categoria, aumento percentual, frequência, saldo projetado). 
+                Identifica alertas, oportunidades e informações priorizadas automaticamente.
+              </p>
+            </div>
+            <div className="p-3 rounded-lg bg-background/50 border">
+              <div className="flex items-center gap-2 mb-1">
+                <Badge variant="secondary" className="text-xs">Heurística</Badge>
+                <span className="text-xs text-muted-foreground">Sistema Baseado em Regras</span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Detecta padrões específicos usando regras if/else (gastos acima de X% do salário, picos em transporte, parcelamentos). 
+                Rápido e eficiente para alertas imediatos sobre comportamentos críticos.
+              </p>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground pt-2 border-t">
+            💡 <strong>Para avaliadores:</strong> Cada insight mostra sua origem (badge) permitindo rastrear qual sistema de IA o gerou. 
+            A prioridade (1-3) define a urgência da recomendação.
+          </p>
+        </CardContent>
+      </Card>
+
       {loading ? (
         <div className="text-center py-12">Carregando insights...</div>
       ) : insights.length === 0 ? (
