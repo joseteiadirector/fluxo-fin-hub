@@ -44,6 +44,35 @@ export default function Metas() {
   useEffect(() => {
     if (user) {
       fetchMetas();
+      
+      // Configurar realtime para metas e transactions
+      const channel = supabase
+        .channel('metas-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'metas',
+            filter: `user_id=eq.${user.id}`
+          },
+          () => fetchMetas()
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'transactions',
+            filter: `user_id=eq.${user.id}`
+          },
+          () => fetchMetas()
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
     }
   }, [user, modo]);
 
