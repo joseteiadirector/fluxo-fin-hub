@@ -156,42 +156,37 @@ Prioridades: 1 (urgente), 2 (importante), 3 (informativo)`
               description: "Gerar insights financeiros únicos e personalizados",
               parameters: {
                 type: "object",
-                properties: {
-                  insights: {
-                    type: "array",
-                    description: "Lista de 3-5 insights variados e únicos",
-                    items: {
-                      type: "object",
-                      properties: {
-                        titulo: {
-                          type: "string",
-                          description: "Título curto e chamativo com emoji relevante"
-                        },
-                        mensagem: {
-                          type: "string",
-                          description: "Mensagem clara e específica com dados reais"
-                        },
-                        tipo: {
-                          type: "string",
-                          enum: ["alerta", "oportunidade", "informacao"],
-                          description: "Tipo do insight baseado na urgência"
-                        },
-                        origem: {
-                          type: "string",
-                          enum: ["regressao_linear", "arvore_decisao", "heuristica"],
-                          description: "Sistema que gerou o insight"
-                        },
-                        prioridade: {
-                          type: "number",
-                          enum: [1, 2, 3],
-                          description: "1=urgente, 2=importante, 3=informativo"
+                  properties: {
+                    insights: {
+                      type: "array",
+                      description: "Lista de 3-5 insights variados e únicos",
+                      items: {
+                        type: "object",
+                        properties: {
+                          titulo: {
+                            type: "string",
+                            description: "Título curto e chamativo com emoji relevante"
+                          },
+                          mensagem: {
+                            type: "string",
+                            description: "Mensagem clara e específica com dados reais"
+                          },
+                          tipo: {
+                            type: "string",
+                            description: "Tipo do insight baseado na urgência"
+                          },
+                          origem: {
+                            type: "string",
+                            description: "Sistema que gerou o insight"
+                          },
+                          prioridade: {
+                            type: "number",
+                            description: "1=urgente, 2=importante, 3=informativo"
+                          }
                         }
-                      },
-                      required: ["titulo", "mensagem", "tipo", "origem", "prioridade"]
+                      }
                     }
                   }
-                },
-                required: ["insights"]
               }
             }
           }
