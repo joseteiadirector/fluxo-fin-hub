@@ -106,174 +106,174 @@ export const useInitialData = () => {
 
       // Transações de exemplo - últimos 30 dias
       const transactions = [
-        // Receitas - Trabalho
+        // Entradas - Trabalho
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "receita",
+          tipo: "entrada",
           categoria: "Salário",
           descricao: "Salário CLT - Novembro",
-          valor: 3500.00,
+          valor: 3500.0,
           modo: "trabalho",
-          data: new Date(today.getFullYear(), today.getMonth(), 5).toISOString()
+          data: new Date(today.getFullYear(), today.getMonth(), 5).toISOString(),
         },
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "receita",
+          tipo: "entrada",
           categoria: "Freelance",
           descricao: "Projeto desenvolvimento web",
-          valor: 1200.00,
+          valor: 1200.0,
           modo: "trabalho",
-          data: new Date(today.getFullYear(), today.getMonth(), 12).toISOString()
+          data: new Date(today.getFullYear(), today.getMonth(), 12).toISOString(),
         },
-        // Despesas - Trabalho
+        // Saídas - Trabalho
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "despesa",
+          tipo: "saida",
           categoria: "Transporte",
           descricao: "Uber reunião cliente",
-          valor: 45.80,
+          valor: 45.8,
           modo: "trabalho",
-          data: new Date(today.getFullYear(), today.getMonth(), 10).toISOString()
+          data: new Date(today.getFullYear(), today.getMonth(), 10).toISOString(),
         },
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "despesa",
+          tipo: "saida",
           categoria: "Alimentação",
           descricao: "Almoço reunião",
-          valor: 78.90,
+          valor: 78.9,
           modo: "trabalho",
-          data: new Date(today.getFullYear(), today.getMonth(), 11).toISOString()
+          data: new Date(today.getFullYear(), today.getMonth(), 11).toISOString(),
         },
-        // Despesas - Pessoal
+        // Saídas - Pessoal
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "despesa",
+          tipo: "saida",
           categoria: "Alimentação",
           descricao: "Supermercado",
-          valor: 287.50,
+          valor: 287.5,
           modo: "pessoal",
-          data: new Date(today.getFullYear(), today.getMonth(), 8).toISOString()
+          data: new Date(today.getFullYear(), today.getMonth(), 8).toISOString(),
         },
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "despesa",
+          tipo: "saida",
           categoria: "Alimentação",
           descricao: "iFood - Jantar",
-          valor: 52.90,
+          valor: 52.9,
           modo: "pessoal",
-          data: new Date(today.getFullYear(), today.getMonth(), 15).toISOString()
+          data: new Date(today.getFullYear(), today.getMonth(), 15).toISOString(),
         },
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "despesa",
+          tipo: "saida",
           categoria: "Transporte",
           descricao: "Uber faculdade",
-          valor: 28.40,
+          valor: 28.4,
           modo: "pessoal",
-          data: new Date(today.getFullYear(), today.getMonth(), 9).toISOString()
+          data: new Date(today.getFullYear(), today.getMonth(), 9).toISOString(),
         },
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "despesa",
+          tipo: "saida",
           categoria: "Transporte",
           descricao: "Bilhete Único",
-          valor: 100.00,
+          valor: 100.0,
           modo: "pessoal",
-          data: new Date(today.getFullYear(), today.getMonth(), 3).toISOString()
+          data: new Date(today.getFullYear(), today.getMonth(), 3).toISOString(),
         },
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "despesa",
+          tipo: "saida",
           categoria: "Educação",
           descricao: "Mensalidade Faculdade",
-          valor: 890.00,
+          valor: 890.0,
           modo: "pessoal",
-          data: new Date(today.getFullYear(), today.getMonth(), 7).toISOString()
+          data: new Date(today.getFullYear(), today.getMonth(), 7).toISOString(),
         },
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "despesa",
+          tipo: "saida",
           categoria: "Educação",
           descricao: "Livros universitários",
-          valor: 145.00,
+          valor: 145.0,
           modo: "pessoal",
-          data: new Date(today.getFullYear(), today.getMonth(), 14).toISOString()
+          data: new Date(today.getFullYear(), today.getMonth(), 14).toISOString(),
         },
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "despesa",
+          tipo: "saida",
           categoria: "Lazer",
           descricao: "Netflix",
-          valor: 39.90,
+          valor: 39.9,
           modo: "pessoal",
-          data: new Date(today.getFullYear(), today.getMonth(), 1).toISOString()
+          data: new Date(today.getFullYear(), today.getMonth(), 1).toISOString(),
         },
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "despesa",
+          tipo: "saida",
           categoria: "Lazer",
           descricao: "Cinema",
-          valor: 67.00,
+          valor: 67.0,
           modo: "pessoal",
-          data: new Date(today.getFullYear(), today.getMonth(), 13).toISOString()
+          data: new Date(today.getFullYear(), today.getMonth(), 13).toISOString(),
         },
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "despesa",
+          tipo: "saida",
           categoria: "Saúde",
           descricao: "Farmácia",
-          valor: 89.50,
+          valor: 89.5,
           modo: "pessoal",
-          data: new Date(today.getFullYear(), today.getMonth(), 6).toISOString()
+          data: new Date(today.getFullYear(), today.getMonth(), 6).toISOString(),
         },
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "despesa",
+          tipo: "saida",
           categoria: "Moradia",
           descricao: "Aluguel",
-          valor: 650.00,
+          valor: 650.0,
           modo: "pessoal",
-          data: new Date(today.getFullYear(), today.getMonth(), 5).toISOString()
+          data: new Date(today.getFullYear(), today.getMonth(), 5).toISOString(),
         },
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "despesa",
+          tipo: "saida",
           categoria: "Utilidades",
           descricao: "Conta de Luz",
-          valor: 135.80,
+          valor: 135.8,
           modo: "pessoal",
-          data: new Date(today.getFullYear(), today.getMonth(), 4).toISOString()
-        }
+          data: new Date(today.getFullYear(), today.getMonth(), 4).toISOString(),
+        },
       ];
 
       // Inserir transações
       await supabase.from("transactions").insert(transactions);
 
       // Calcular saldo
-      const totalReceitas = transactions
-        .filter(t => t.tipo === "receita")
-        .reduce((sum, t) => sum + t.valor, 0);
-      
-      const totalDespesas = transactions
-        .filter(t => t.tipo === "despesa")
+      const totalEntradas = transactions
+        .filter((t) => t.tipo === "entrada")
         .reduce((sum, t) => sum + t.valor, 0);
 
-      const saldoAtual = totalReceitas - totalDespesas;
+      const totalSaidas = transactions
+        .filter((t) => t.tipo === "saida")
+        .reduce((sum, t) => sum + t.valor, 0);
+
+      const saldoAtual = totalEntradas - totalSaidas;
 
       // Atualizar saldo
       await supabase
