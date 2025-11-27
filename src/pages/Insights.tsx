@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, TrendingUp, Info } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { AlertTriangle, TrendingUp, Info, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { InsightsEngine } from "@/utils/insightsEngine";
+import { toast } from "sonner";
 
 interface Insight {
   id: string;
@@ -18,16 +21,60 @@ interface Insight {
   lido: boolean;
 }
 
-const Insights = () => {
+interface InsightsProps {
+  modoTrabalho: boolean;
+}
+
+const Insights = ({ modoTrabalho }: InsightsProps) => {
   const [insights, setInsights] = useState<Insight[]>([]);
   const [loading, setLoading] = useState(true);
+  const [generating, setGenerating] = useState(false);
   const { user } = useAuth();
+  const insightsEngine = new InsightsEngine();
 
   useEffect(() => {
     if (user) {
       fetchInsights();
+      
+      // Configurar realtime para insights
+      const channel = supabase
+        .channel('insights-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'insights',
+            filter: `user_id=eq.${user.id}`
+          },
+          () => fetchInsights()
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
     }
-  }, [user]);
+  }, [user, modoTrabalho]);
+
+  const generateNewInsights = async () => {
+    if (!user) return;
+    
+    setGenerating(true);
+    toast.info("Analisando seus padrões de gastos...");
+    
+    try {
+      const modo = modoTrabalho ? "trabalho" : "pessoal";
+      await insightsEngine.generateInsights(user.id, modo);
+      toast.success("Novos insights gerados com sucesso!");
+      await fetchInsights();
+    } catch (error) {
+      console.error("Error generating insights:", error);
+      toast.error("Erro ao gerar insights");
+    } finally {
+      setGenerating(false);
+    }
+  };
 
   const fetchInsights = async () => {
     setLoading(true);
@@ -82,11 +129,21 @@ const Insights = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold">Insights Inteligentes</h2>
-        <p className="text-muted-foreground">
-          Análises e alertas gerados pela IA
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold">Insights Inteligentes - {modoTrabalho ? "Trabalho" : "Pessoal"}</h2>
+          <p className="text-muted-foreground">
+            Análise automática com IA dos seus padrões financeiros
+          </p>
+        </div>
+        <Button 
+          onClick={generateNewInsights}
+          disabled={generating}
+          className="gap-2"
+        >
+          <RefreshCw className={`h-4 w-4 ${generating ? 'animate-spin' : ''}`} />
+          {generating ? "Analisando..." : "Gerar Insights"}
+        </Button>
       </div>
 
       {loading ? (

@@ -61,7 +61,7 @@ const App = () => {
               element={
                 <ProtectedRoute>
                   <Layout modoTrabalho={modoTrabalho} setModoTrabalho={setModoTrabalho}>
-                    <Insights />
+                    <Insights modoTrabalho={modoTrabalho} />
                   </Layout>
                 </ProtectedRoute>
               }
