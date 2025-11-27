@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -13,12 +14,117 @@ serve(async (req) => {
   try {
     const { message, conversationHistory } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+    const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
+
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      throw new Error("Sem autorização");
+    }
+
+    const supabase = createClient(SUPABASE_URL!, SUPABASE_ANON_KEY!, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      throw new Error("Usuário não autenticado");
+    }
 
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY não configurada");
     }
 
+    // Buscar dados financeiros do usuário
+    const { data: accounts } = await supabase
+      .from("accounts")
+      .select("*")
+      .eq("user_id", user.id);
+
+    const { data: transactions } = await supabase
+      .from("transactions")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("data", { ascending: false })
+      .limit(50);
+
+    const { data: insights } = await supabase
+      .from("insights")
+      .select("*")
+      .eq("user_id", user.id)
+      .eq("lido", false)
+      .order("prioridade", { ascending: false })
+      .limit(10);
+
+    const { data: metas } = await supabase
+      .from("metas")
+      .select("*")
+      .eq("user_id", user.id);
+
+    // Análise de gastos
+    const saldoTotal = accounts?.reduce((acc, acc_item) => acc + Number(acc_item.saldo_atual), 0) || 0;
+    
+    const despesas = transactions?.filter(t => t.tipo === "saida") || [];
+    const maioresDespesas = despesas
+      .sort((a, b) => Number(b.valor) - Number(a.valor))
+      .slice(0, 5)
+      .map(t => `R$ ${Number(t.valor).toFixed(2)} - ${t.descricao} (${t.categoria}) em ${new Date(t.data).toLocaleDateString('pt-BR')}`);
+
+    const gastosPorCategoria: Record<string, number> = {};
+    despesas.forEach(t => {
+      gastosPorCategoria[t.categoria] = (gastosPorCategoria[t.categoria] || 0) + Number(t.valor);
+    });
+
+    const categoriasMaisGastam = Object.entries(gastosPorCategoria)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([cat, valor]) => `${cat}: R$ ${valor.toFixed(2)}`);
+
+    // Verificar metas próximas do limite
+    const metasEmAlerta = metas?.filter(meta => {
+      const gastoCategoria = gastosPorCategoria[meta.categoria] || 0;
+      const percentual = (gastoCategoria / Number(meta.valor_limite)) * 100;
+      return percentual >= 80;
+    }).map(meta => {
+      const gastoCategoria = gastosPorCategoria[meta.categoria] || 0;
+      const percentual = ((gastoCategoria / Number(meta.valor_limite)) * 100).toFixed(0);
+      return `${meta.categoria}: ${percentual}% do limite (R$ ${gastoCategoria.toFixed(2)} / R$ ${Number(meta.valor_limite).toFixed(2)})`;
+    }) || [];
+
+    const contextoDados = `
+DADOS FINANCEIROS ATUAIS DO USUÁRIO:
+
+💰 SALDO TOTAL: R$ ${saldoTotal.toFixed(2)}
+
+🔥 5 MAIORES DESPESAS RECENTES:
+${maioresDespesas.length > 0 ? maioresDespesas.join('\n') : 'Nenhuma despesa registrada'}
+
+📊 CATEGORIAS COM MAIS GASTOS:
+${categoriasMaisGastam.length > 0 ? categoriasMaisGastam.join('\n') : 'Nenhum gasto registrado'}
+
+⚠️ METAS EM ALERTA (>80% do limite):
+${metasEmAlerta.length > 0 ? metasEmAlerta.join('\n') : 'Nenhuma meta em alerta'}
+
+💡 INSIGHTS NÃO LIDOS: ${insights?.length || 0}
+${insights && insights.length > 0 ? insights.slice(0, 3).map(i => `- ${i.titulo}: ${i.mensagem}`).join('\n') : ''}
+
+📈 TOTAL DE TRANSAÇÕES RECENTES: ${transactions?.length || 0}
+`;
+
+    console.log("Contexto de dados:", contextoDados);
+
     const systemPrompt = `Você é o assistente virtual do Équilibra, um hub financeiro para universitários que trabalham.
+
+${contextoDados}
+
+COMO RESPONDER:
+1. Use os DADOS REAIS do usuário acima para dar respostas personalizadas
+2. Se perguntarem sobre gastos, cite as despesas específicas com valores e datas
+3. Se perguntarem sobre categorias, mostre os gastos por categoria com valores reais
+4. Sempre que possível, sugira atalhos para o usuário navegar
+5. Seja proativo: se notar metas em alerta, mencione!
+6. Use emojis para deixar as respostas mais visuais
+7. Seja conciso mas informativo
 
 SOBRE O ÉQUILIBRA:
 - App para gerenciar finanças separando gastos de Trabalho e Pessoais
@@ -56,7 +162,12 @@ MODO TRABALHO vs PESSOAL:
 - Toggle no topo alterna entre gastos de trabalho e pessoais
 - Todas as visualizações respeitam esse filtro
 
-Seja conciso, amigável e sempre sugira atalhos relevantes. Responda em português brasileiro.`;
+EXEMPLOS DE RESPOSTAS INTELIGENTES:
+- "Seus maiores gastos este mês foram em [categoria] com R$ [valor]. Quer ver o extrato completo? [ATALHO:extrato]"
+- "Você está usando 85% do seu limite em [categoria]! Quer ajustar sua meta? [ATALHO:metas]"
+- "Percebi que você gastou R$ [valor] em [data]. Isso está acima do seu padrão. Quer ver insights sobre isso? [ATALHO:insights]"
+
+Seja conciso, amigável, use os dados reais e sempre sugira atalhos relevantes. Responda em português brasileiro.`;
 
     const messages = [
       { role: "system", content: systemPrompt },
@@ -73,8 +184,8 @@ Seja conciso, amigável e sempre sugira atalhos relevantes. Responda em portugu�
       body: JSON.stringify({
         model: "google/gemini-2.5-flash",
         messages,
-        temperature: 0.7,
-        max_tokens: 500,
+        temperature: 0.8,
+        max_tokens: 600,
       }),
     });
 

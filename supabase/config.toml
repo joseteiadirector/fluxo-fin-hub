@@ -8,3 +8,6 @@ verify_jwt = true
 
 [functions.generate-insights]
 verify_jwt = false
+
+[functions.chatbot]
+verify_jwt = true
