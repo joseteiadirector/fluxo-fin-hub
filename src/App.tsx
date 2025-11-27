@@ -7,6 +7,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Layout from "@/components/Layout";
+import { ChatBot } from "@/components/ChatBot";
+import { useAuth } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Extrato from "./pages/Extrato";
@@ -19,16 +21,14 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-const App = () => {
+const AppRoutes = () => {
   const [modoTrabalho, setModoTrabalho] = useState(true);
+  const { user } = useAuth();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
+    <>
+      <Toaster />
+      <Sonner />
           <Routes>
             <Route path="/auth" element={<Auth />} />
             <Route
@@ -97,11 +97,21 @@ const App = () => {
             />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          {user && <ChatBot />}
+    </>
+  );
+};
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+      <TooltipProvider>
+        <BrowserRouter>
+          <AppRoutes />
         </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>
   </QueryClientProvider>
 );
-};
 
 export default App;
