@@ -15,21 +15,31 @@ serve(async (req) => {
     const { message, conversationHistory } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
-    const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
+    if (!LOVABLE_API_KEY) {
+      throw new Error("LOVABLE_API_KEY não configurada");
+    }
+
+    // Obter token do header de autorização
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       throw new Error("Sem autorização");
     }
 
-    const supabase = createClient(SUPABASE_URL!, SUPABASE_ANON_KEY!, {
-      global: { headers: { Authorization: authHeader } },
-    });
+    // Criar cliente Supabase com service role para acessar dados
+    const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
 
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    // Extrair user do JWT
+    const token = authHeader.replace("Bearer ", "");
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+    
     if (userError || !user) {
+      console.error("Erro de autenticação:", userError);
       throw new Error("Usuário não autenticado");
     }
+
+    console.log("User ID:", user.id);
 
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY não configurada");
