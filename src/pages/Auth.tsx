@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Wallet } from "lucide-react";
+import { Wallet, X } from "lucide-react";
 import { toast } from "sonner";
 import backgroundImage from "@/assets/auth-background.jpg";
 
@@ -15,6 +14,8 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [nomeCompleto, setNomeCompleto] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
   const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
 
@@ -70,33 +71,123 @@ const Auth = () => {
 
   return (
     <div 
-      className="min-h-screen flex items-end justify-end p-6 lg:p-10 relative"
+      className="min-h-screen flex items-center justify-between p-8 lg:p-16 relative"
       style={{
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
-        backgroundPosition: 'left center',
+        backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'
       }}
     >
-      <Card className="w-full max-w-sm lg:max-w-md relative z-10 shadow-2xl bg-background/95">
-        <CardHeader className="space-y-3 text-center">
-          <div className="mx-auto h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-            <Wallet className="h-6 w-6 text-primary" />
+      {/* Branding à esquerda */}
+      <div className="flex-1 z-10 max-w-xl">
+        <div className="space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="h-16 w-16 rounded-full bg-primary/20 backdrop-blur-sm flex items-center justify-center">
+              <Wallet className="h-8 w-8 text-primary" />
+            </div>
+            <h1 className="text-5xl lg:text-6xl font-bold text-white drop-shadow-lg">Équilibra</h1>
           </div>
-          <CardTitle className="text-2xl">Workflow</CardTitle>
+          <p className="text-2xl lg:text-3xl text-white font-medium drop-shadow-md">
+            Seu assistente financeiro universitário
+          </p>
+          <p className="text-lg text-white/90 drop-shadow-md max-w-md">
+            Equilibrando trabalho, estudo e vida. Gerencie suas finanças com inteligência.
+          </p>
+          
+          {!showForm && (
+            <div className="flex gap-4 pt-4">
+              <Button 
+                size="lg" 
+                onClick={() => { setShowForm(true); setIsSignUp(false); }}
+                className="text-lg px-8"
+              >
+                Entrar
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                onClick={() => { setShowForm(true); setIsSignUp(true); }}
+                className="text-lg px-8 bg-white/10 backdrop-blur-sm text-white border-white/30 hover:bg-white/20"
+              >
+                Cadastrar
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Formulário à direita */}
+      {showForm && (
+        <Card className="w-full max-w-md relative z-10 shadow-2xl bg-background animate-in slide-in-from-right">
+        <CardHeader className="space-y-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-2xl">{isSignUp ? "Criar Conta" : "Entrar"}</CardTitle>
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => setShowForm(false)}
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
           <CardDescription>
-            Assistente Financeiro do Trabalhador
+            {isSignUp ? "Crie sua conta no Équilibra" : "Acesse sua conta"}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Entrar</TabsTrigger>
-              <TabsTrigger value="cadastro">Cadastrar</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="login">
-              <form onSubmit={handleSignIn} className="space-y-4">
+          {isSignUp ? (
+            <form onSubmit={handleSignUp} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="nome-cadastro">Nome Completo</Label>
+                <Input
+                  id="nome-cadastro"
+                  type="text"
+                  placeholder="Seu nome completo"
+                  value={nomeCompleto}
+                  onChange={(e) => setNomeCompleto(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email-cadastro">Email</Label>
+                <Input
+                  id="email-cadastro"
+                  type="email"
+                  placeholder="seu@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password-cadastro">Senha</Label>
+                <Input
+                  id="password-cadastro"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={6}
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Cadastrando..." : "Criar Conta"}
+              </Button>
+              <p className="text-center text-sm text-muted-foreground">
+                Já tem conta?{" "}
+                <button
+                  type="button"
+                  onClick={() => setIsSignUp(false)}
+                  className="text-primary hover:underline"
+                >
+                  Entrar
+                </button>
+              </p>
+            </form>
+          ) : (
+            <form onSubmit={handleSignIn} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email-login">Email</Label>
                   <Input
@@ -119,56 +210,24 @@ const Auth = () => {
                     required
                   />
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Entrando..." : "Entrar"}
-                </Button>
-              </form>
-            </TabsContent>
-            
-            <TabsContent value="cadastro">
-              <form onSubmit={handleSignUp} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="nome-cadastro">Nome Completo</Label>
-                  <Input
-                    id="nome-cadastro"
-                    type="text"
-                    placeholder="Seu nome completo"
-                    value={nomeCompleto}
-                    onChange={(e) => setNomeCompleto(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email-cadastro">Email</Label>
-                  <Input
-                    id="email-cadastro"
-                    type="email"
-                    placeholder="seu@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password-cadastro">Senha</Label>
-                  <Input
-                    id="password-cadastro"
-                    type="password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    minLength={6}
-                  />
-                </div>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Cadastrando..." : "Criar Conta"}
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Entrando..." : "Entrar"}
+              </Button>
+              <p className="text-center text-sm text-muted-foreground">
+                Não tem conta?{" "}
+                <button
+                  type="button"
+                  onClick={() => setIsSignUp(true)}
+                  className="text-primary hover:underline"
+                >
+                  Cadastrar
+                </button>
+              </p>
+            </form>
+          )}
         </CardContent>
       </Card>
+      )}
     </div>
   );
 };
