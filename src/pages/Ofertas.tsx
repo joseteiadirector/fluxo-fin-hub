@@ -177,10 +177,10 @@ export default function Ofertas() {
 
   const getColorByType = (tipo: string) => {
     switch (tipo) {
-      case "cashback": return "bg-green-500/10 text-green-500 border-green-500/20";
-      case "emprestimo": return "bg-blue-500/10 text-blue-500 border-blue-500/20";
-      case "seguro": return "bg-purple-500/10 text-purple-500 border-purple-500/20";
-      default: return "bg-orange-500/10 text-orange-500 border-orange-500/20";
+      case "cashback": return "bg-primary/10 text-primary border-primary/20";
+      case "emprestimo": return "bg-secondary/10 text-secondary-foreground border-secondary/20";
+      case "seguro": return "bg-accent/10 text-accent-foreground border-accent/20";
+      default: return "bg-muted/10 text-foreground border-muted/20";
     }
   };
 
@@ -247,7 +247,10 @@ export default function Ofertas() {
 
         {/* Lista de Ofertas */}
         {loading ? (
-          <div className="text-center py-12">Carregando ofertas...</div>
+          <div className="text-center py-12 text-muted-foreground">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <p className="mt-4">Carregando ofertas...</p>
+          </div>
         ) : ofertas.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center">
@@ -262,10 +265,10 @@ export default function Ofertas() {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {ofertas.map((oferta) => (
-              <Card key={oferta.id} className="border-2 hover:shadow-lg transition-all">
+              <Card key={oferta.id} className="animate-scale-in border-2 group cursor-pointer bg-gradient-to-br from-card to-card/50">
                 <CardHeader>
                   <div className="flex justify-between items-start mb-2">
-                    <div className={`p-3 rounded-lg border-2 ${getColorByType(oferta.tipo_oferta)}`}>
+                    <div className={`p-3 rounded-lg border-2 transition-transform group-hover:scale-110 ${getColorByType(oferta.tipo_oferta)}`}>
                       {getIconByType(oferta.tipo_oferta)}
                     </div>
                     <Badge variant="secondary" className="gap-1">

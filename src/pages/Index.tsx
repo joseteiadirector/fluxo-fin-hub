@@ -218,7 +218,7 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
   const percentualGasto = saldoAtual > 0 ? Math.round((gastosMes / saldoAtual) * 100) : 0;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-fade-in">
       <div className="mb-6">
         <h2 className="text-2xl font-bold mb-1">
           {modoTrabalho ? "Dashboard - Trabalho" : "Dashboard - Pessoal"}
@@ -231,18 +231,18 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
       {/* Cards de Resumo */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Saldo Atual */}
-        <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
+        <Card className="group cursor-pointer bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Wallet className="h-5 w-5" />
+                <Wallet className="h-5 w-5 group-hover:scale-110 transition-transform" />
                 Saldo Atual
               </CardTitle>
               <Info className="h-4 w-4 text-muted-foreground/50" />
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="text-3xl font-bold">{formatCurrency(saldoAtual)}</div>
+            <div className="text-3xl font-bold group-hover:text-primary transition-colors">{formatCurrency(saldoAtual)}</div>
             <div className="space-y-1">
               <p className="text-xs text-muted-foreground">
                 💰 Dinheiro disponível na sua conta agora
@@ -255,18 +255,18 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
         </Card>
 
         {/* Previsão do Mês */}
-        <Card className={`bg-gradient-to-br from-${previsaoStatus.color}/10 to-${previsaoStatus.color}/5 border-${previsaoStatus.color}/20`}>
+        <Card className="group cursor-pointer bg-gradient-to-br from-card to-card/50 border-primary/20">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <TrendingUp className="h-5 w-5" />
+                <TrendingUp className={`h-5 w-5 group-hover:scale-110 transition-transform text-${previsaoStatus.color}`} />
                 Previsão do Mês
               </CardTitle>
               <Info className="h-4 w-4 text-muted-foreground/50" />
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className={`text-3xl font-bold text-${previsaoStatus.color}`}>
+            <div className={`text-3xl font-bold group-hover:text-primary transition-colors text-${previsaoStatus.color}`}>
               {formatCurrency(previsaoMes)}
             </div>
             <div className="space-y-1">
@@ -284,18 +284,18 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
         </Card>
 
         {/* Gastos no Mês */}
-        <Card className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 border-amber-500/20">
+        <Card className="group cursor-pointer bg-gradient-to-br from-card to-card/50 border-primary/20">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <TrendingDown className="h-5 w-5" />
+                <TrendingDown className="h-5 w-5 group-hover:scale-110 transition-transform text-destructive" />
                 Gastos no Mês
               </CardTitle>
               <Info className="h-4 w-4 text-muted-foreground/50" />
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="text-3xl font-bold text-amber-500">
+            <div className="text-3xl font-bold group-hover:text-primary transition-colors text-destructive">
               {formatCurrency(gastosMes)}
             </div>
             <div className="space-y-2">
@@ -309,7 +309,7 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
                 </div>
                 <div className="w-full bg-muted rounded-full h-2">
                   <div 
-                    className="bg-amber-500 h-2 rounded-full transition-all"
+                    className="bg-gradient-to-r from-primary to-destructive h-2 rounded-full transition-all"
                     style={{ width: `${Math.min(percentualGasto, 100)}%` }}
                   />
                 </div>
