@@ -400,16 +400,16 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
               </div>
             </div>
           </CardHeader>
-          <CardContent className="flex justify-center">
-            <ResponsiveContainer width="100%" height={300}>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={400}>
               <PieChart>
                 <Pie
                   data={distribuicaoCategoria}
                   cx="50%"
                   cy="50%"
-                  labelLine={false}
-                  label={(entry: any) => `${entry.categoria} (${(entry.percent * 100).toFixed(0)}%)`}
-                  outerRadius={100}
+                  labelLine={true}
+                  label={(entry: any) => `${(entry.percent * 100).toFixed(0)}%`}
+                  outerRadius={120}
                   fill="#8884d8"
                   dataKey="valor"
                 >
@@ -417,7 +417,16 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value: number) => formatCurrency(value)} />
+                <Tooltip 
+                  formatter={(value: number) => formatCurrency(value)}
+                  contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }}
+                />
+                <Legend 
+                  verticalAlign="bottom" 
+                  height={36}
+                  formatter={(value, entry: any) => `${value} (${(entry.payload.percent * 100).toFixed(1)}%)`}
+                  wrapperStyle={{ paddingTop: '20px' }}
+                />
               </PieChart>
             </ResponsiveContainer>
           </CardContent>
