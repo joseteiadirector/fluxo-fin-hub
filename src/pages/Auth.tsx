@@ -71,7 +71,7 @@ const Auth = () => {
 
   return (
     <div 
-      className="min-h-screen flex items-center justify-center p-8 lg:p-16 relative"
+      className="min-h-screen flex items-center justify-end p-8 lg:p-16 relative"
       style={{
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
@@ -79,8 +79,8 @@ const Auth = () => {
         backgroundRepeat: 'no-repeat'
       }}
     >
-      {/* Branding centralizado */}
-      <div className="flex flex-col items-center justify-center text-center gap-4 z-10 mt-16 lg:mt-24">
+      {/* Branding à direita */}
+      <div className="flex flex-col items-start justify-center text-left gap-4 z-10 max-w-xl mr-8 lg:mr-16 mt-8 lg:mt-12">
         <div className="h-16 w-16 rounded-full bg-primary/20 backdrop-blur-sm flex items-center justify-center">
           <Wallet className="h-8 w-8 text-primary" />
         </div>
@@ -93,7 +93,7 @@ const Auth = () => {
         </p>
 
         {!showForm && (
-          <div className="flex gap-4 pt-2">
+          <div className="flex gap-4 pt-4">
             <Button 
               size="lg" 
               onClick={() => { setShowForm(true); setIsSignUp(false); }}
