@@ -89,18 +89,18 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
       .order("data", { ascending: true });
 
     if (transactions && transactions.length > 0) {
-      // Gastos totais do mês
+      // Saídas totais do mês
       const gastos = transactions
-        .filter(t => t.tipo === "despesa")
+        .filter((t) => t.tipo === "saida")
         .reduce((sum, t) => sum + Number(t.valor), 0);
-      
+
       setGastosMes(gastos);
-      
-      // Receitas do mês
+
+      // Entradas do mês
       const receitas = transactions
-        .filter(t => t.tipo === "receita")
+        .filter((t) => t.tipo === "entrada")
         .reduce((sum, t) => sum + Number(t.valor), 0);
-      
+
       // Previsão baseada no saldo atual e média de gastos
       const dayOfMonth = now.getDate();
       const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
@@ -113,8 +113,8 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
       // Processar gastos diários
       const gastosPorDia: { [key: number]: number } = {};
       transactions
-        .filter(t => t.tipo === "despesa")
-        .forEach(t => {
+        .filter((t) => t.tipo === "saida")
+        .forEach((t) => {
           const dia = new Date(t.data).getDate();
           gastosPorDia[dia] = (gastosPorDia[dia] || 0) + Number(t.valor);
         });
@@ -128,8 +128,8 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
       // Distribuição por categoria
       const gastosPorCategoria: { [key: string]: number } = {};
       transactions
-        .filter(t => t.tipo === "despesa")
-        .forEach(t => {
+        .filter((t) => t.tipo === "saida")
+        .forEach((t) => {
           gastosPorCategoria[t.categoria] = (gastosPorCategoria[t.categoria] || 0) + Number(t.valor);
         });
       
@@ -167,9 +167,8 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
         .gte("data", mesData.toISOString())
         .lt("data", proximoMes.toISOString());
 
-      const gastos = data
-        ?.filter(t => t.tipo === "despesa")
-        .reduce((sum, t) => sum + Number(t.valor), 0) || 0;
+      const gastos =
+        data?.filter((t) => t.tipo === "saida").reduce((sum, t) => sum + Number(t.valor), 0) || 0;
 
       meses.push({
         mes: mesData.toLocaleDateString("pt-BR", { month: "short" }),
