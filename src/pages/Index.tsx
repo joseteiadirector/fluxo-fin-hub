@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { TrendingUp, TrendingDown, Wallet, CreditCard, Briefcase, Settings, Info } from "lucide-react";
+import { TrendingUp, TrendingDown, Wallet, CreditCard, Briefcase } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface DashboardProps {
   modoTrabalho: boolean;
@@ -20,7 +18,6 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
   const [tendenciaMensal, setTendenciaMensal] = useState<{mes: string, valor: number, previsao?: number}[]>([]);
   const [distribuicaoCategoria, setDistribuicaoCategoria] = useState<{categoria: string, valor: number}[]>([]);
   const { user } = useAuth();
-  const navigate = useNavigate();
 
   const COLORS = ['#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#ef4444'];
 
@@ -191,43 +188,14 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-2xl font-bold mb-1">
-            {modoTrabalho ? "Dashboard - Trabalho" : "Dashboard - Pessoal"}
-          </h2>
-          <p className="text-muted-foreground">
-            Bem-vindo ao seu assistente financeiro inteligente
-          </p>
-        </div>
-        <Button 
-          variant="outline" 
-          className="gap-2"
-          onClick={() => navigate('/demo-setup')}
-        >
-          <Settings className="h-4 w-4" />
-          Setup Demo
-        </Button>
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold mb-1">
+          {modoTrabalho ? "Dashboard - Trabalho" : "Dashboard - Pessoal"}
+        </h2>
+        <p className="text-muted-foreground">
+          Bem-vindo ao seu assistente financeiro inteligente
+        </p>
       </div>
-
-      {/* Card Informativo quando não há dados */}
-      {gastosMes === 0 && saldoAtual === 0 && (
-        <Alert>
-          <Info className="h-4 w-4" />
-          <AlertDescription>
-            <p className="font-semibold mb-2">👋 Bem-vindo ao Équilibra!</p>
-            <p className="text-sm mb-3">Para visualizar os gráficos, previsões e análises de IA, você precisa primeiro configurar dados de exemplo ou adicionar suas próprias transações.</p>
-            <Button 
-              onClick={() => navigate('/demo-setup')} 
-              className="gap-2"
-              variant="default"
-            >
-              <Settings className="h-4 w-4" />
-              Configurar Dados Demo
-            </Button>
-          </AlertDescription>
-        </Alert>
-      )}
 
       {/* Cards de Resumo */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
