@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { Settings, User, Bell, Shield } from "lucide-react";
+import { Settings, User, Bell, Shield, Trash2, Database } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import SimpleLayout from "@/components/SimpleLayout";
 
@@ -23,6 +24,7 @@ export default function Preferencias() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   
   const [profile, setProfile] = useState({
     nome_completo: "",
@@ -92,6 +94,71 @@ export default function Preferencias() {
       toast.error("Erro ao salvar preferências");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const clearAllData = async () => {
+    setDeleting(true);
+    try {
+      // Deletar services_logs
+      const { error: logsError } = await supabase
+        .from("services_logs")
+        .delete()
+        .eq("user_id", user?.id);
+
+      if (logsError) throw logsError;
+
+      // Deletar transactions
+      const { error: transactionsError } = await supabase
+        .from("transactions")
+        .delete()
+        .eq("user_id", user?.id);
+
+      if (transactionsError) throw transactionsError;
+
+      // Deletar insights
+      const { error: insightsError } = await supabase
+        .from("insights")
+        .delete()
+        .eq("user_id", user?.id);
+
+      if (insightsError) throw insightsError;
+
+      // Deletar ofertas
+      const { error: ofertasError } = await supabase
+        .from("ofertas")
+        .delete()
+        .eq("user_id", user?.id);
+
+      if (ofertasError) throw ofertasError;
+
+      // Deletar metas
+      const { error: metasError } = await supabase
+        .from("metas")
+        .delete()
+        .eq("user_id", user?.id);
+
+      if (metasError) throw metasError;
+
+      // Resetar saldo das contas para 0
+      const { error: accountsError } = await supabase
+        .from("accounts")
+        .update({ saldo_atual: 0 })
+        .eq("user_id", user?.id);
+
+      if (accountsError) throw accountsError;
+
+      toast.success("Todos os dados foram limpos com sucesso!");
+      
+      // Recarregar a página após 1 segundo
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } catch (error) {
+      console.error("Erro ao limpar dados:", error);
+      toast.error("Erro ao limpar dados");
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -215,7 +282,7 @@ export default function Preferencias() {
           </Card>
 
           {/* Segurança */}
-          <Card className="animate-scale-in lg:col-span-2">
+          <Card className="animate-scale-in">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Shield className="w-5 h-5" />
@@ -236,6 +303,61 @@ export default function Preferencias() {
               <Button variant="destructive" className="w-full">
                 Excluir Conta
               </Button>
+            </CardContent>
+          </Card>
+
+          {/* Dados */}
+          <Card className="animate-scale-in">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Database className="w-5 h-5" />
+                Gerenciar Dados
+              </CardTitle>
+              <CardDescription>
+                Limpar todos os dados financeiros da conta
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="text-sm text-muted-foreground space-y-2">
+                <p>Esta ação irá remover permanentemente:</p>
+                <ul className="list-disc list-inside space-y-1 ml-2">
+                  <li>Todas as transações</li>
+                  <li>Histórico de serviços</li>
+                  <li>Insights gerados</li>
+                  <li>Metas definidas</li>
+                  <li>Ofertas recebidas</li>
+                  <li>Saldo das contas (resetado para R$ 0,00)</li>
+                </ul>
+                <p className="font-semibold text-destructive mt-4">
+                  ⚠️ Esta ação não pode ser desfeita!
+                </p>
+              </div>
+              <Separator />
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" className="w-full" disabled={deleting}>
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    {deleting ? "Limpando..." : "Limpar Todos os Dados"}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Tem certeza absoluta?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Esta ação não pode ser desfeita. Isso irá remover permanentemente todos os seus dados financeiros, incluindo transações, histórico de serviços, insights, metas e ofertas.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={clearAllData}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      Sim, limpar tudo
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </CardContent>
           </Card>
         </div>
