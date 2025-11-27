@@ -26,19 +26,29 @@ serve(async (req) => {
       throw new Error("Sem autorização");
     }
 
-    const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
     const token = authHeader.replace("Bearer ", "");
-    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
-    
-    if (userError || !user) {
+
+    // Decodificar JWT validado pelo Lovable Cloud para obter o ID do usuário
+    const tokenParts = token.split(".");
+    if (tokenParts.length !== 3) {
+      throw new Error("Token inválido");
+    }
+
+    const payloadJson = atob(tokenParts[1]);
+    const payload = JSON.parse(payloadJson) as { sub?: string };
+
+    const userId = payload.sub;
+    if (!userId) {
       throw new Error("Usuário não autenticado");
     }
+
+    const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
 
     // Buscar dados financeiros
     const { data: accounts } = await supabase
       .from("accounts")
       .select("*")
-      .eq("user_id", user.id);
+      .eq("user_id", userId);
 
     const today = new Date();
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -55,7 +65,7 @@ serve(async (req) => {
     const { data: transactions } = await supabase
       .from("transactions")
       .select("*")
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .gte("data", timeFilter)
       .order("data", { ascending: false });
 
