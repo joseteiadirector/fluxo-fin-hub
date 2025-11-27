@@ -1,14 +1,18 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { CreditCard, Smartphone, Gift, ArrowRight, Coins, Shield, PiggyBank } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { CreditCard, Smartphone, Gift, ArrowRight, Coins, Shield, PiggyBank, Settings } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Info } from "lucide-react";
 import CashbackModal from "@/components/servicos/CashbackModal";
 import SegurosModal from "@/components/servicos/SegurosModal";
 import EmprestimosModal from "@/components/servicos/EmprestimosModal";
 
 const Servicos = () => {
   const [selectedServico, setSelectedServico] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const servicos = [
     {
@@ -60,9 +64,17 @@ const Servicos = () => {
       <div>
         <h2 className="text-2xl font-bold">Serviços Financeiros</h2>
         <p className="text-muted-foreground">
-          Acesso rápido aos seus serviços favoritos
+          Acesso rápido aos seus serviços favoritos - 6 serviços integrados em um só lugar
         </p>
       </div>
+
+      <Alert>
+        <Info className="h-4 w-4" />
+        <AlertDescription>
+          <p className="font-semibold mb-2">💡 Sobre os Serviços</p>
+          <p className="text-sm">Esta é a central de serviços financeiros do Équilibra. Cada operação realizada aqui é registrada automaticamente no seu extrato e analisada pelos insights de IA. <strong>Cashback, Seguros e Empréstimos</strong> estão funcionais para demonstração. Os demais serão disponibilizados em breve.</p>
+        </AlertDescription>
+      </Alert>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {servicos.map((servico) => {
@@ -106,10 +118,16 @@ const Servicos = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Serviço em Desenvolvimento</DialogTitle>
+            <DialogDescription>
+              Este serviço está em desenvolvimento e estará disponível em breve.
+            </DialogDescription>
           </DialogHeader>
           <p className="text-muted-foreground">
-            Este serviço está em desenvolvimento e estará disponível em breve.
+            Por enquanto, experimente os serviços de <strong>Cashback</strong>, <strong>Seguros</strong> e <strong>Empréstimos</strong> que estão totalmente funcionais para demonstração!
           </p>
+          <Button onClick={() => setSelectedServico(null)}>
+            Entendido
+          </Button>
         </DialogContent>
       </Dialog>
 

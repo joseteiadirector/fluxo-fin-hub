@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, TrendingDown, Wallet, CreditCard, Briefcase, Settings } from "lucide-react";
+import { TrendingUp, TrendingDown, Wallet, CreditCard, Briefcase, Settings, Info } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
 import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface DashboardProps {
   modoTrabalho: boolean;
@@ -208,6 +209,25 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
           Setup Demo
         </Button>
       </div>
+
+      {/* Card Informativo quando não há dados */}
+      {gastosMes === 0 && saldoAtual === 0 && (
+        <Alert>
+          <Info className="h-4 w-4" />
+          <AlertDescription>
+            <p className="font-semibold mb-2">👋 Bem-vindo ao Équilibra!</p>
+            <p className="text-sm mb-3">Para visualizar os gráficos, previsões e análises de IA, você precisa primeiro configurar dados de exemplo ou adicionar suas próprias transações.</p>
+            <Button 
+              onClick={() => navigate('/demo-setup')} 
+              className="gap-2"
+              variant="default"
+            >
+              <Settings className="h-4 w-4" />
+              Configurar Dados Demo
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
 
       {/* Cards de Resumo */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
