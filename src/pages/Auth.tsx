@@ -71,7 +71,7 @@ const Auth = () => {
 
   return (
     <div 
-      className="min-h-screen flex items-center justify-end p-8 lg:p-16 relative"
+      className="min-h-screen flex flex-col justify-between p-8 lg:p-16 relative"
       style={{
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
@@ -79,16 +79,20 @@ const Auth = () => {
         backgroundRepeat: 'no-repeat'
       }}
     >
-      {/* Branding à direita */}
-      <div className="flex flex-col items-start justify-center text-left gap-3 z-10 max-w-lg mr-12 lg:mr-20 mt-4 lg:mt-8">
-        <div className="h-16 w-16 rounded-full bg-primary/20 backdrop-blur-sm flex items-center justify-center">
-          <Wallet className="h-8 w-8 text-primary" />
+      {/* Título no TOPO */}
+      <div className="flex items-center gap-3 justify-center z-10 pt-4">
+        <div className="h-14 w-14 rounded-full bg-primary/20 backdrop-blur-sm flex items-center justify-center">
+          <Wallet className="h-7 w-7 text-primary" />
         </div>
         <h1 className="text-5xl lg:text-7xl font-bold text-white drop-shadow-lg">Équilibra</h1>
+      </div>
+
+      {/* Slogan e botões na PARTE DE BAIXO */}
+      <div className="flex flex-col items-center justify-center text-center gap-3 z-10 pb-12 lg:pb-16">
         <p className="text-xl lg:text-2xl text-white font-medium drop-shadow-md">
           Seu assistente financeiro universitário
         </p>
-        <p className="text-base lg:text-lg text-white/90 drop-shadow-md">
+        <p className="text-base lg:text-lg text-white/90 drop-shadow-md max-w-xl">
           Equilibrando trabalho, estudo e vida. Gerencie suas finanças com inteligência.
         </p>
 
