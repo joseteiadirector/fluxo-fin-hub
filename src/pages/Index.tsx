@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, TrendingDown, Wallet, CreditCard, Briefcase, ArrowLeft, Info } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { TrendingUp, TrendingDown, Wallet, CreditCard, Briefcase, ArrowLeft, Info, Moon, Sun, Palette } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -9,6 +10,7 @@ import { useInitialData } from "@/hooks/useInitialData";
 import { Link, useNavigate } from "react-router-dom";
 import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { toast } from "sonner";
+import { useTheme } from "next-themes";
 
 interface DashboardProps {
   modoTrabalho: boolean;
@@ -24,6 +26,7 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { hasData, loading: initialLoading } = useInitialData();
+  const { theme, setTheme } = useTheme();
 
   const COLORS = ['#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#ef4444'];
 
@@ -421,10 +424,12 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
         </Card>
       </div>
 
-      {/* Serviços Rápidos */}
-      <div>
-        <h3 className="text-lg font-semibold mb-4">Acesso Rápido</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Serviços Rápidos e Aparência */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Acesso Rápido - 2 colunas */}
+        <div className="lg:col-span-2">
+          <h3 className="text-lg font-semibold mb-4">Acesso Rápido</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Link to="/servicos">
             <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
               <CardContent className="pt-6">
@@ -472,6 +477,49 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
               </CardContent>
             </Card>
           </Link>
+          </div>
+        </div>
+
+        {/* Aparência - 1 coluna */}
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Aparência</h3>
+          <Card className="group cursor-pointer bg-gradient-to-br from-card to-card/50 border-primary/20">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium flex items-center gap-2">
+                <Palette className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />
+                Personalização
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
+                <div className="flex items-center gap-3">
+                  {theme === "dark" ? (
+                    <Moon className="w-5 h-5 text-primary" />
+                  ) : (
+                    <Sun className="w-5 h-5 text-primary" />
+                  )}
+                  <div>
+                    <p className="text-sm font-medium">Tema Escuro</p>
+                    <p className="text-xs text-muted-foreground">
+                      {theme === "dark" ? "Ativado" : "Desativado"}
+                    </p>
+                  </div>
+                </div>
+                <Switch
+                  checked={theme === "dark"}
+                  onCheckedChange={(checked) => {
+                    setTheme(checked ? "dark" : "light");
+                    toast.success(checked ? "🌙 Tema escuro ativado" : "☀️ Tema claro ativado");
+                  }}
+                />
+              </div>
+              <Link to="/preferencias">
+                <Button variant="outline" className="w-full" size="sm">
+                  Mais Opções
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
