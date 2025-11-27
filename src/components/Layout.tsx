@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Link, useLocation } from "react-router-dom";
-import backgroundImage from "@/assets/background-hero.png";
 
 interface LayoutProps {
   children: ReactNode;
@@ -34,19 +33,9 @@ const Layout = ({ children, modoTrabalho, setModoTrabalho }: LayoutProps) => {
   ];
 
   return (
-    <div 
-      className="min-h-screen relative"
-      style={{
-        backgroundImage: `url(${backgroundImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed'
-      }}
-    >
-      <div className="absolute inset-0 bg-background/85 backdrop-blur-sm" />
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50 relative">
+      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -84,7 +73,7 @@ const Layout = ({ children, modoTrabalho, setModoTrabalho }: LayoutProps) => {
       </header>
 
       {/* Navigation */}
-      <nav className="border-b border-border bg-card/30 relative">
+      <nav className="border-b border-border bg-card/30">
         <div className="container mx-auto px-4">
           <div className="flex gap-1">
             {navItems.map((item) => {
@@ -111,7 +100,7 @@ const Layout = ({ children, modoTrabalho, setModoTrabalho }: LayoutProps) => {
       </nav>
 
       {/* Content */}
-      <main className="container mx-auto px-4 py-8 relative">
+      <main className="container mx-auto px-4 py-8">
         {children}
       </main>
     </div>
