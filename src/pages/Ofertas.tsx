@@ -206,6 +206,45 @@ export default function Ofertas() {
           </p>
         </div>
 
+        {/* Como Funciona - Explicação para Avaliadores */}
+        <Card className="border-primary/20 bg-primary/5">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <TrendingUp className="w-5 h-5" />
+              Como Funciona o Sistema de Ofertas
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              O Équilibra analisa automaticamente seus gastos e gera ofertas personalizadas baseadas em regras inteligentes:
+            </p>
+            <div className="grid gap-2 text-sm">
+              <div className="flex items-start gap-2">
+                <Percent className="w-4 h-4 mt-0.5 text-green-500" />
+                <div>
+                  <strong className="text-foreground">Cashback:</strong> Oferecido na categoria onde você mais gasta (ex: 5% de volta em Alimentação)
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <CreditCard className="w-4 h-4 mt-0.5 text-blue-500" />
+                <div>
+                  <strong className="text-foreground">Empréstimo:</strong> Taxa especial de 1.5% ao mês se seus gastos mensais ultrapassam R$ 500
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <TrendingUp className="w-4 h-4 mt-0.5 text-purple-500" />
+                <div>
+                  <strong className="text-foreground">Seguro Auto:</strong> 20% de desconto se você gasta mais de R$ 200 em Transporte
+                </div>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground pt-2 border-t">
+              💡 <strong>Para avaliadores:</strong> As ofertas são geradas automaticamente ao detectar padrões nos últimos 30 dias de transações. 
+              O sistema evita duplicatas verificando ofertas ativas do mesmo tipo antes de criar novas.
+            </p>
+          </CardContent>
+        </Card>
+
         {/* Lista de Ofertas */}
         {loading ? (
           <div className="text-center py-12">Carregando ofertas...</div>
