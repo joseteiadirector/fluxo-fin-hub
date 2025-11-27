@@ -110,7 +110,7 @@ export const useInitialData = () => {
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "receita",
+          tipo: "entrada",
           categoria: "Salário",
           descricao: "Salário CLT - Novembro",
           valor: 3500.0,
@@ -120,7 +120,7 @@ export const useInitialData = () => {
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "receita",
+          tipo: "entrada",
           categoria: "Freelance",
           descricao: "Projeto desenvolvimento web",
           valor: 1200.0,
@@ -131,7 +131,7 @@ export const useInitialData = () => {
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "despesa",
+          tipo: "saida",
           categoria: "Transporte",
           descricao: "Uber reunião cliente",
           valor: 45.8,
@@ -141,7 +141,7 @@ export const useInitialData = () => {
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "despesa",
+          tipo: "saida",
           categoria: "Alimentação",
           descricao: "Almoço reunião",
           valor: 78.9,
@@ -152,7 +152,7 @@ export const useInitialData = () => {
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "despesa",
+          tipo: "saida",
           categoria: "Alimentação",
           descricao: "Supermercado",
           valor: 287.5,
@@ -162,7 +162,7 @@ export const useInitialData = () => {
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "despesa",
+          tipo: "saida",
           categoria: "Alimentação",
           descricao: "iFood - Jantar",
           valor: 52.9,
@@ -172,7 +172,7 @@ export const useInitialData = () => {
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "despesa",
+          tipo: "saida",
           categoria: "Transporte",
           descricao: "Uber faculdade",
           valor: 28.4,
@@ -182,7 +182,7 @@ export const useInitialData = () => {
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "despesa",
+          tipo: "saida",
           categoria: "Transporte",
           descricao: "Bilhete Único",
           valor: 100.0,
@@ -192,7 +192,7 @@ export const useInitialData = () => {
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "despesa",
+          tipo: "saida",
           categoria: "Educação",
           descricao: "Mensalidade Faculdade",
           valor: 890.0,
@@ -202,7 +202,7 @@ export const useInitialData = () => {
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "despesa",
+          tipo: "saida",
           categoria: "Educação",
           descricao: "Livros universitários",
           valor: 145.0,
@@ -212,7 +212,7 @@ export const useInitialData = () => {
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "despesa",
+          tipo: "saida",
           categoria: "Lazer",
           descricao: "Netflix",
           valor: 39.9,
@@ -222,7 +222,7 @@ export const useInitialData = () => {
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "despesa",
+          tipo: "saida",
           categoria: "Lazer",
           descricao: "Cinema",
           valor: 67.0,
@@ -232,7 +232,7 @@ export const useInitialData = () => {
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "despesa",
+          tipo: "saida",
           categoria: "Saúde",
           descricao: "Farmácia",
           valor: 89.5,
@@ -242,7 +242,7 @@ export const useInitialData = () => {
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "despesa",
+          tipo: "saida",
           categoria: "Moradia",
           descricao: "Aluguel",
           valor: 650.0,
@@ -252,7 +252,7 @@ export const useInitialData = () => {
         {
           user_id: user.id,
           account_id: accountId,
-          tipo: "despesa",
+          tipo: "saida",
           categoria: "Utilidades",
           descricao: "Conta de Luz",
           valor: 135.8,
@@ -266,11 +266,11 @@ export const useInitialData = () => {
 
       // Calcular saldo
       const totalReceitas = transactions
-        .filter((t) => t.tipo === "receita")
+        .filter((t) => t.tipo === "entrada")
         .reduce((sum, t) => sum + t.valor, 0);
 
       const totalDespesas = transactions
-        .filter((t) => t.tipo === "despesa")
+        .filter((t) => t.tipo === "saida")
         .reduce((sum, t) => sum + t.valor, 0);
 
       const saldoAtual = totalReceitas - totalDespesas;

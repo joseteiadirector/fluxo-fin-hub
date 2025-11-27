@@ -15,7 +15,7 @@ interface Transaction {
   data: string;
   descricao: string;
   valor: number;
-  tipo: "receita" | "despesa";
+  tipo: "entrada" | "saida";
   categoria: string;
   modo: "trabalho" | "pessoal";
 }
@@ -115,10 +115,10 @@ const Extrato = ({ modoTrabalho }: ExtratoProps) => {
                   <div className="flex items-center gap-3">
                     <div
                       className={`h-10 w-10 rounded-full flex items-center justify-center ${
-                        transaction.tipo === "receita" ? "bg-green-500/10" : "bg-red-500/10"
+                        transaction.tipo === "entrada" ? "bg-green-500/10" : "bg-red-500/10"
                       }`}
                     >
-                      {transaction.tipo === "receita" ? (
+                      {transaction.tipo === "entrada" ? (
                         <TrendingUp className="h-5 w-5 text-green-500" />
                       ) : (
                         <TrendingDown className="h-5 w-5 text-red-500" />
@@ -138,10 +138,10 @@ const Extrato = ({ modoTrabalho }: ExtratoProps) => {
                   </div>
                   <p
                     className={`text-lg font-bold ${
-                      transaction.tipo === "receita" ? "text-green-500" : "text-red-500"
+                      transaction.tipo === "entrada" ? "text-green-500" : "text-red-500"
                     }`}
                   >
-                    {transaction.tipo === "receita" ? "+" : "-"}
+                    {transaction.tipo === "entrada" ? "+" : "-"}
                     {formatCurrency(transaction.valor)}
                   </p>
                 </div>
