@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Gift, Percent, CreditCard, TrendingUp, Clock, Sparkles } from "lucide-react";
+import { Gift, Percent, CreditCard, TrendingUp, Clock, Sparkles, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import SimpleLayout from "@/components/SimpleLayout";
 
@@ -343,7 +343,9 @@ export default function Ofertas() {
                     <Button
                       variant="outline"
                       onClick={() => desativarOferta(oferta.id)}
+                      className="gap-2"
                     >
+                      <Trash2 className="w-4 h-4" />
                       Dispensar
                     </Button>
                   </div>
