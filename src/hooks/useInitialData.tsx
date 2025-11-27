@@ -41,14 +41,32 @@ export const useInitialData = () => {
     if (!user) return;
 
     try {
-      // Obter conta principal
-      const { data: accounts } = await supabase
+      // Obter ou criar conta principal
+      let { data: accounts } = await supabase
         .from("accounts")
         .select("id")
         .eq("user_id", user.id)
         .limit(1);
 
-      if (!accounts || accounts.length === 0) return;
+      // Se não existe conta, criar uma
+      if (!accounts || accounts.length === 0) {
+        const { data: newAccount, error: accountError } = await supabase
+          .from("accounts")
+          .insert({
+            user_id: user.id,
+            nome_da_conta: "Conta Principal",
+            tipo_conta: "principal",
+            saldo_atual: 0
+          })
+          .select()
+          .single();
+
+        if (accountError || !newAccount) {
+          console.error("Erro ao criar conta:", accountError);
+          return;
+        }
+        accounts = [newAccount];
+      }
 
       const accountId = accounts[0].id;
       const today = new Date();
