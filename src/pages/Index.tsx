@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, TrendingDown, Wallet, CreditCard, Briefcase } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { TrendingUp, TrendingDown, Wallet, CreditCard, Briefcase, Settings } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 interface DashboardProps {
@@ -18,6 +19,7 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
   const [tendenciaMensal, setTendenciaMensal] = useState<{mes: string, valor: number, previsao?: number}[]>([]);
   const [distribuicaoCategoria, setDistribuicaoCategoria] = useState<{categoria: string, valor: number}[]>([]);
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const COLORS = ['#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#ef4444'];
 
@@ -75,7 +77,7 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
     if (transactions) {
       // Gastos totais do mês
       const gastos = transactions
-        .filter(t => t.tipo === "saida")
+        .filter(t => t.tipo === "despesa")
         .reduce((sum, t) => sum + Number(t.valor), 0);
       
       setGastosMes(gastos);
@@ -89,7 +91,7 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
       // Processar gastos diários
       const gastosPorDia: { [key: number]: number } = {};
       transactions
-        .filter(t => t.tipo === "saida")
+        .filter(t => t.tipo === "despesa")
         .forEach(t => {
           const dia = new Date(t.data).getDate();
           gastosPorDia[dia] = (gastosPorDia[dia] || 0) + Number(t.valor);
@@ -104,7 +106,7 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
       // Distribuição por categoria
       const gastosPorCategoria: { [key: string]: number } = {};
       transactions
-        .filter(t => t.tipo === "saida")
+        .filter(t => t.tipo === "despesa")
         .forEach(t => {
           gastosPorCategoria[t.categoria] = (gastosPorCategoria[t.categoria] || 0) + Number(t.valor);
         });
@@ -137,7 +139,7 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
         .lt("data", proximoMes.toISOString());
 
       const gastos = data
-        ?.filter(t => t.tipo === "saida")
+        ?.filter(t => t.tipo === "despesa")
         .reduce((sum, t) => sum + Number(t.valor), 0) || 0;
 
       meses.push({
@@ -188,13 +190,23 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
 
   return (
     <div className="space-y-8">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold mb-1">
-          {modoTrabalho ? "Dashboard - Trabalho" : "Dashboard - Pessoal"}
-        </h2>
-        <p className="text-muted-foreground">
-          Bem-vindo ao seu assistente financeiro inteligente
-        </p>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-2xl font-bold mb-1">
+            {modoTrabalho ? "Dashboard - Trabalho" : "Dashboard - Pessoal"}
+          </h2>
+          <p className="text-muted-foreground">
+            Bem-vindo ao seu assistente financeiro inteligente
+          </p>
+        </div>
+        <Button 
+          variant="outline" 
+          className="gap-2"
+          onClick={() => navigate('/demo-setup')}
+        >
+          <Settings className="h-4 w-4" />
+          Setup Demo
+        </Button>
       </div>
 
       {/* Cards de Resumo */}
