@@ -55,11 +55,6 @@ export const useInitialData = () => {
         console.log("🔄 Gerando transações automáticas para o protótipo...");
         await populateInitialData();
         setHasData(true);
-        
-        // Forçar reload da página para atualizar todos os dados
-        setTimeout(() => {
-          window.location.reload();
-        }, 500);
       } else {
         setHasData(true);
       }
