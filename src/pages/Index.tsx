@@ -230,50 +230,90 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
 
       {/* Cards de Resumo */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Saldo Atual */}
         <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Saldo Atual
-            </CardTitle>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <Wallet className="h-5 w-5" />
+                Saldo Atual
+              </CardTitle>
+              <Info className="h-4 w-4 text-muted-foreground/50" />
+            </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-3">
             <div className="text-3xl font-bold">{formatCurrency(saldoAtual)}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Atualizado agora
-            </p>
+            <div className="space-y-1">
+              <p className="text-xs text-muted-foreground">
+                💰 <strong>O que é:</strong> Dinheiro disponível na sua conta agora
+              </p>
+              <p className="text-xs text-primary font-medium">
+                ✓ Atualizado em tempo real
+              </p>
+            </div>
           </CardContent>
         </Card>
 
+        {/* Previsão do Mês */}
         <Card className={`bg-gradient-to-br from-${previsaoStatus.color}/10 to-${previsaoStatus.color}/5 border-${previsaoStatus.color}/20`}>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Previsão do Mês
-            </CardTitle>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <TrendingUp className="h-5 w-5" />
+                Previsão do Mês
+              </CardTitle>
+              <Info className="h-4 w-4 text-muted-foreground/50" />
+            </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-3">
             <div className={`text-3xl font-bold text-${previsaoStatus.color}`}>
               {formatCurrency(previsaoMes)}
             </div>
-            <div className="flex items-center gap-1 mt-1">
-              <TrendingUp className={`h-4 w-4 text-${previsaoStatus.color}`} />
-              <p className={`text-xs text-${previsaoStatus.color}`}>{previsaoStatus.text}</p>
+            <div className="space-y-1">
+              <p className="text-xs text-muted-foreground">
+                🔮 <strong>O que é:</strong> Quanto você terá no fim do mês se continuar gastando no ritmo atual
+              </p>
+              <div className="flex items-center gap-1">
+                <TrendingUp className={`h-3 w-3 text-${previsaoStatus.color}`} />
+                <p className={`text-xs text-${previsaoStatus.color} font-medium`}>
+                  {previsaoStatus.text}
+                </p>
+              </div>
             </div>
           </CardContent>
         </Card>
 
+        {/* Gastos no Mês */}
         <Card className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 border-amber-500/20">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Gastos no Mês
-            </CardTitle>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <TrendingDown className="h-5 w-5" />
+                Gastos no Mês
+              </CardTitle>
+              <Info className="h-4 w-4 text-muted-foreground/50" />
+            </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-3">
             <div className="text-3xl font-bold text-amber-500">
               {formatCurrency(gastosMes)}
             </div>
-            <div className="flex items-center gap-1 mt-1">
-              <TrendingDown className="h-4 w-4 text-amber-500" />
-              <p className="text-xs text-amber-500">{percentualGasto}% do saldo</p>
+            <div className="space-y-2">
+              <p className="text-xs text-muted-foreground">
+                📊 <strong>O que é:</strong> Total de despesas desde o dia 1º até hoje
+              </p>
+              <div className="space-y-1">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">Consumido do saldo:</span>
+                  <span className="text-amber-500 font-medium">{percentualGasto}%</span>
+                </div>
+                <div className="w-full bg-muted rounded-full h-2">
+                  <div 
+                    className="bg-amber-500 h-2 rounded-full transition-all"
+                    style={{ width: `${Math.min(percentualGasto, 100)}%` }}
+                  />
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
