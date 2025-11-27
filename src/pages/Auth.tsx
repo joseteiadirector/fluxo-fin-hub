@@ -70,7 +70,7 @@ const Auth = () => {
 
   return (
     <div 
-      className="min-h-screen flex items-center justify-end p-8 relative"
+      className="min-h-screen flex items-end justify-end p-6 lg:p-10 relative"
       style={{
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
@@ -78,8 +78,7 @@ const Auth = () => {
         backgroundRepeat: 'no-repeat'
       }}
     >
-      
-      <Card className="w-full max-w-md relative z-10 shadow-2xl mr-8 lg:mr-16 bg-background">
+      <Card className="w-full max-w-sm lg:max-w-md relative z-10 shadow-2xl bg-background/95">
         <CardHeader className="space-y-3 text-center">
           <div className="mx-auto h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
             <Wallet className="h-6 w-6 text-primary" />
