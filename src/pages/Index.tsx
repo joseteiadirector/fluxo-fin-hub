@@ -400,7 +400,57 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
               </div>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-6">
+            {/* Análise Inteligente */}
+            {distribuicaoCategoria.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-muted/50 rounded-lg">
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">Categoria de Maior Gasto</p>
+                  <div className="flex items-center gap-2">
+                    <TrendingDown className="w-4 h-4 text-destructive" />
+                    <div>
+                      <p className="font-semibold text-sm">
+                        {distribuicaoCategoria.reduce((max, cat) => cat.valor > max.valor ? cat : max).categoria}
+                      </p>
+                      <p className="text-xs text-destructive">
+                        {formatCurrency(distribuicaoCategoria.reduce((max, cat) => cat.valor > max.valor ? cat : max).valor)}
+                        {" "}({((distribuicaoCategoria.reduce((max, cat) => cat.valor > max.valor ? cat : max).valor / gastosMes) * 100).toFixed(1)}%)
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">Total de Categorias</p>
+                  <div className="flex items-center gap-2">
+                    <Info className="w-4 h-4 text-primary" />
+                    <div>
+                      <p className="font-semibold text-sm">{distribuicaoCategoria.length} categorias</p>
+                      <p className="text-xs text-muted-foreground">
+                        Diversificação: {distribuicaoCategoria.length >= 5 ? "Alta" : distribuicaoCategoria.length >= 3 ? "Média" : "Baixa"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">Potencial de Economia</p>
+                  <div className="flex items-center gap-2">
+                    <Wallet className="w-4 h-4 text-green-500" />
+                    <div>
+                      <p className="font-semibold text-sm text-green-500">
+                        {formatCurrency(gastosMes * 0.15)}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Reduzindo 15% dos gastos
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Gráfico */}
             <ResponsiveContainer width="100%" height={400}>
               <PieChart>
                 <Pie
@@ -408,7 +458,11 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
                   cx="50%"
                   cy="50%"
                   labelLine={true}
-                  label={(entry: any) => `${(entry.percent * 100).toFixed(0)}%`}
+                  label={(entry: any) => {
+                    const total = distribuicaoCategoria.reduce((sum, item) => sum + item.valor, 0);
+                    const percent = ((entry.valor / total) * 100).toFixed(1);
+                    return `${percent}%`;
+                  }}
                   outerRadius={120}
                   fill="#8884d8"
                   dataKey="valor"
@@ -418,17 +472,72 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
                   ))}
                 </Pie>
                 <Tooltip 
-                  formatter={(value: number) => formatCurrency(value)}
-                  contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }}
+                  formatter={(value: number) => {
+                    const total = distribuicaoCategoria.reduce((sum, item) => sum + item.valor, 0);
+                    const percent = ((value / total) * 100).toFixed(1);
+                    return [`${formatCurrency(value)} (${percent}%)`, 'Gasto'];
+                  }}
+                  contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
                 />
                 <Legend 
                   verticalAlign="bottom" 
                   height={36}
-                  formatter={(value, entry: any) => `${value} (${(entry.payload.percent * 100).toFixed(1)}%)`}
+                  formatter={(value, entry: any) => {
+                    const total = distribuicaoCategoria.reduce((sum, item) => sum + item.valor, 0);
+                    const percent = ((entry.payload.valor / total) * 100).toFixed(1);
+                    return `${value}: ${formatCurrency(entry.payload.valor)} (${percent}%)`;
+                  }}
                   wrapperStyle={{ paddingTop: '20px' }}
                 />
               </PieChart>
             </ResponsiveContainer>
+
+            {/* Detalhamento das Categorias */}
+            {distribuicaoCategoria.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="text-sm font-semibold flex items-center gap-2">
+                  <Info className="w-4 h-4" />
+                  Análise Detalhada por Categoria
+                </h4>
+                <div className="grid gap-2">
+                  {distribuicaoCategoria
+                    .sort((a, b) => b.valor - a.valor)
+                    .map((cat, idx) => {
+                      const percent = ((cat.valor / gastosMes) * 100).toFixed(1);
+                      const isTop = idx === 0;
+                      return (
+                        <div 
+                          key={cat.categoria} 
+                          className={`flex items-center justify-between p-3 rounded-lg border ${
+                            isTop ? 'bg-destructive/5 border-destructive/20' : 'bg-muted/30 border-border'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div 
+                              className="w-3 h-3 rounded-full" 
+                              style={{ backgroundColor: COLORS[distribuicaoCategoria.indexOf(cat) % COLORS.length] }}
+                            />
+                            <div>
+                              <p className="font-medium text-sm">{cat.categoria}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {percent}% do total • Posição: {idx + 1}º
+                              </p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-semibold text-sm">{formatCurrency(cat.valor)}</p>
+                            {isTop && (
+                              <Badge variant="destructive" className="text-xs mt-1">
+                                Maior gasto
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
