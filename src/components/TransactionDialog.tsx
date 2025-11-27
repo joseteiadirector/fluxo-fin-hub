@@ -21,7 +21,7 @@ const TransactionDialog = ({ open, onClose, modoTrabalho, onSuccess }: Transacti
   const [formData, setFormData] = useState({
     descricao: "",
     valor: "",
-    tipo: "saida",
+    tipo: "despesa",
     categoria: "",
     data: new Date().toISOString().split("T")[0],
   });
@@ -102,7 +102,7 @@ const TransactionDialog = ({ open, onClose, modoTrabalho, onSuccess }: Transacti
       if (transactionError) throw transactionError;
 
       // Atualizar saldo
-      const novoSaldo = formData.tipo === "entrada"
+      const novoSaldo = formData.tipo === "receita"
         ? accounts[0].saldo_atual + valor
         : accounts[0].saldo_atual - valor;
 
@@ -150,8 +150,8 @@ const TransactionDialog = ({ open, onClose, modoTrabalho, onSuccess }: Transacti
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="entrada">Receita</SelectItem>
-                <SelectItem value="saida">Despesa</SelectItem>
+                <SelectItem value="receita">Receita</SelectItem>
+                <SelectItem value="despesa">Despesa</SelectItem>
               </SelectContent>
             </Select>
           </div>

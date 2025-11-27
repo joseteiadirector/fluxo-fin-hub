@@ -89,16 +89,16 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
       .order("data", { ascending: true });
 
     if (transactions && transactions.length > 0) {
-      // Saídas totais do mês
+      // Gastos totais do mês
       const gastos = transactions
-        .filter((t) => t.tipo === "saida")
+        .filter((t) => t.tipo === "despesa")
         .reduce((sum, t) => sum + Number(t.valor), 0);
 
       setGastosMes(gastos);
 
-      // Entradas do mês
+      // Receitas do mês
       const receitas = transactions
-        .filter((t) => t.tipo === "entrada")
+        .filter((t) => t.tipo === "receita")
         .reduce((sum, t) => sum + Number(t.valor), 0);
 
       // Previsão baseada no saldo atual e média de gastos
@@ -113,7 +113,7 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
       // Processar gastos diários
       const gastosPorDia: { [key: number]: number } = {};
       transactions
-        .filter((t) => t.tipo === "saida")
+        .filter((t) => t.tipo === "despesa")
         .forEach((t) => {
           const dia = new Date(t.data).getDate();
           gastosPorDia[dia] = (gastosPorDia[dia] || 0) + Number(t.valor);
@@ -128,7 +128,7 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
       // Distribuição por categoria
       const gastosPorCategoria: { [key: string]: number } = {};
       transactions
-        .filter((t) => t.tipo === "saida")
+        .filter((t) => t.tipo === "despesa")
         .forEach((t) => {
           gastosPorCategoria[t.categoria] = (gastosPorCategoria[t.categoria] || 0) + Number(t.valor);
         });
@@ -168,7 +168,7 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
         .lt("data", proximoMes.toISOString());
 
       const gastos =
-        data?.filter((t) => t.tipo === "saida").reduce((sum, t) => sum + Number(t.valor), 0) || 0;
+        data?.filter((t) => t.tipo === "despesa").reduce((sum, t) => sum + Number(t.valor), 0) || 0;
 
       meses.push({
         mes: mesData.toLocaleDateString("pt-BR", { month: "short" }),
