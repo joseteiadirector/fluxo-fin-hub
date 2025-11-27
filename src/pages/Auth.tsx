@@ -80,23 +80,30 @@ const Auth = () => {
       }}
     >
       {/* Branding à esquerda */}
-      <div className="flex-1 z-10 max-w-xl">
-        <div className="space-y-6">
-          <div className="flex items-center gap-3">
+      <div className="flex-1 z-10 max-w-2xl">
+        <div className="space-y-8">
+          {/* Título principal centralizado */}
+          <div className="flex items-center justify-center gap-3">
             <div className="h-16 w-16 rounded-full bg-primary/20 backdrop-blur-sm flex items-center justify-center">
               <Wallet className="h-8 w-8 text-primary" />
             </div>
-            <h1 className="text-5xl lg:text-6xl font-bold text-white drop-shadow-lg">Équilibra</h1>
+            <h1 className="text-6xl lg:text-7xl font-bold text-white drop-shadow-lg">Équilibra</h1>
           </div>
-          <p className="text-2xl lg:text-3xl text-white font-medium drop-shadow-md">
-            Seu assistente financeiro universitário
-          </p>
-          <p className="text-lg text-white/90 drop-shadow-md max-w-md">
-            Equilibrando trabalho, estudo e vida. Gerencie suas finanças com inteligência.
-          </p>
+          
+          {/* Slogan à direita abaixo */}
+          <div className="flex justify-end pr-8">
+            <div className="space-y-2 text-right">
+              <p className="text-xl lg:text-2xl text-white font-medium drop-shadow-md">
+                Seu assistente financeiro universitário
+              </p>
+              <p className="text-base text-white/90 drop-shadow-md">
+                Equilibrando trabalho, estudo e vida
+              </p>
+            </div>
+          </div>
           
           {!showForm && (
-            <div className="flex gap-4 pt-4">
+            <div className="flex justify-center gap-4 pt-4">
               <Button 
                 size="lg" 
                 onClick={() => { setShowForm(true); setIsSignUp(false); }}
