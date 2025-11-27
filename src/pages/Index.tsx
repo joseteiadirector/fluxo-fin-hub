@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, TrendingDown, Wallet, CreditCard, Briefcase, ArrowLeft } from "lucide-react";
+import { TrendingUp, TrendingDown, Wallet, CreditCard, Briefcase, ArrowLeft, Info } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useInitialData } from "@/hooks/useInitialData";
@@ -283,7 +284,17 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
         {/* Evolução de Gastos Diários */}
         <Card>
           <CardHeader>
-            <CardTitle>Gastos Diários no Mês</CardTitle>
+            <div className="flex items-start justify-between">
+              <div className="space-y-1">
+                <CardTitle className="flex items-center gap-2">
+                  Gastos Diários no Mês
+                  <Badge variant="outline" className="text-xs font-normal">Gráfico de Linha</Badge>
+                </CardTitle>
+                <p className="text-xs text-muted-foreground">
+                  📊 <strong>Agregação de dados:</strong> Soma de todas as despesas (tipo: saída) agrupadas por dia do mês atual
+                </p>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={250}>
@@ -304,7 +315,17 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
         {/* Tendência Mensal com Previsão */}
         <Card>
           <CardHeader>
-            <CardTitle>Tendência Mensal (6 meses + Previsão)</CardTitle>
+            <div className="flex items-start justify-between">
+              <div className="space-y-1">
+                <CardTitle className="flex items-center gap-2">
+                  Tendência Mensal (6 meses + Previsão)
+                  <Badge variant="outline" className="text-xs font-normal">Gráfico de Linha</Badge>
+                </CardTitle>
+                <p className="text-xs text-muted-foreground">
+                  🤖 <strong>Regressão Linear:</strong> Calcula tendência usando fórmula y = mx + b (slope & intercept) nos gastos dos últimos 6 meses para projetar próximo mês
+                </p>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={250}>
@@ -324,7 +345,17 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
         {/* Distribuição por Categoria */}
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Distribuição de Gastos por Categoria</CardTitle>
+            <div className="flex items-start justify-between">
+              <div className="space-y-1">
+                <CardTitle className="flex items-center gap-2">
+                  Distribuição de Gastos por Categoria
+                  <Badge variant="outline" className="text-xs font-normal">Gráfico de Pizza</Badge>
+                </CardTitle>
+                <p className="text-xs text-muted-foreground">
+                  📊 <strong>Agregação por categoria:</strong> Agrupa todas as despesas por categoria e calcula percentual de cada uma sobre o total de gastos do mês
+                </p>
+              </div>
+            </div>
           </CardHeader>
           <CardContent className="flex justify-center">
             <ResponsiveContainer width="100%" height={300}>
