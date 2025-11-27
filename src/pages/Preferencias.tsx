@@ -7,10 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { Settings, User, Bell, Palette, Shield, Moon, Sun } from "lucide-react";
+import { Settings, User, Bell, Shield } from "lucide-react";
 import { toast } from "sonner";
 import SimpleLayout from "@/components/SimpleLayout";
-import { useTheme } from "next-themes";
 
 interface Preferences {
   notificacoes_insights: boolean;
@@ -22,7 +21,6 @@ interface Preferences {
 
 export default function Preferencias() {
   const { user } = useAuth();
-  const { theme, setTheme } = useTheme();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   
@@ -62,15 +60,10 @@ export default function Preferencias() {
 
       // Carregar preferências do JSON
       if (data?.preferencias && typeof data.preferencias === 'object') {
-        const prefs = data.preferencias as Partial<Preferences>;
         setPreferences({
           ...preferences,
-          ...prefs
+          ...(data.preferencias as Partial<Preferences>)
         });
-        // Aplicar tema salvo
-        if (prefs.tema_escuro !== undefined) {
-          setTheme(prefs.tema_escuro ? "dark" : "light");
-        }
       }
     } catch (error) {
       console.error("Erro ao carregar perfil:", error);
@@ -128,7 +121,7 @@ export default function Preferencias() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Perfil */}
-          <Card>
+          <Card className="animate-scale-in">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <User className="w-5 h-5" />
@@ -163,7 +156,7 @@ export default function Preferencias() {
           </Card>
 
           {/* Notificações */}
-          <Card>
+          <Card className="animate-scale-in">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Bell className="w-5 h-5" />
@@ -221,46 +214,8 @@ export default function Preferencias() {
             </CardContent>
           </Card>
 
-          {/* Aparência */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Palette className="w-5 h-5" />
-                Aparência
-              </CardTitle>
-              <CardDescription>
-                Personalize a interface do aplicativo
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  {theme === "dark" ? (
-                    <Moon className="w-5 h-5 text-primary" />
-                  ) : (
-                    <Sun className="w-5 h-5 text-primary" />
-                  )}
-                  <div>
-                    <Label className="cursor-pointer">Tema Escuro</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Ativar modo escuro permanentemente
-                    </p>
-                  </div>
-                </div>
-                <Switch
-                  checked={theme === "dark"}
-                  onCheckedChange={(checked) => {
-                    setTheme(checked ? "dark" : "light");
-                    setPreferences({ ...preferences, tema_escuro: checked });
-                    toast.success(checked ? "Tema escuro ativado" : "Tema claro ativado");
-                  }}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Segurança */}
-          <Card>
+          <Card className="animate-scale-in lg:col-span-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Shield className="w-5 h-5" />
