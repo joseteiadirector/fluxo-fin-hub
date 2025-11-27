@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CreditCard, Smartphone, Gift, ArrowRight, Coins, Shield, PiggyBank, ArrowLeft } from "lucide-react";
+import { CreditCard, Smartphone, Gift, ArrowRight, Coins, Shield, PiggyBank, ArrowLeft, Link2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,6 +14,7 @@ import BeneficiosModal from "@/components/servicos/BeneficiosModal";
 import CashbackModal from "@/components/servicos/CashbackModal";
 import SegurosModal from "@/components/servicos/SegurosModal";
 import EmprestimosModal from "@/components/servicos/EmprestimosModal";
+import PaymentLinkModal from "@/components/servicos/PaymentLinkModal";
 
 interface ServiceLog {
   id: string;
@@ -67,6 +68,7 @@ const Servicos = () => {
       case "Cashback": return <Coins className="h-4 w-4" />;
       case "Seguros": return <Shield className="h-4 w-4" />;
       case "Emprestimo": return <PiggyBank className="h-4 w-4" />;
+      case "PaymentLink": return <Link2 className="h-4 w-4" />;
       default: return <ArrowRight className="h-4 w-4" />;
     }
   };
@@ -113,6 +115,13 @@ const Servicos = () => {
       descricao: "Crédito pessoal simulado",
       icon: PiggyBank,
       cor: "pink-500"
+    },
+    {
+      id: "payment-link",
+      titulo: "Link de Pagamento",
+      descricao: "Crie links para receber pagamentos",
+      icon: Link2,
+      cor: "cyan-500"
     }
   ];
 
@@ -176,6 +185,10 @@ const Servicos = () => {
       />
       <EmprestimosModal 
         open={selectedServico === "emprestimos"} 
+        onClose={() => { setSelectedServico(null); handleServicoSuccess(); }} 
+      />
+      <PaymentLinkModal 
+        open={selectedServico === "payment-link"} 
         onClose={() => { setSelectedServico(null); handleServicoSuccess(); }} 
       />
 
