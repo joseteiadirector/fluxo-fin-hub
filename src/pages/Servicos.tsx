@@ -2,13 +2,15 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { CreditCard, Smartphone, Gift, ArrowRight, Coins, Shield, PiggyBank } from "lucide-react";
+import { CreditCard, Smartphone, Gift, ArrowRight, Coins, Shield, PiggyBank, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import CashbackModal from "@/components/servicos/CashbackModal";
 import SegurosModal from "@/components/servicos/SegurosModal";
 import EmprestimosModal from "@/components/servicos/EmprestimosModal";
 
 const Servicos = () => {
   const [selectedServico, setSelectedServico] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const servicos = [
     {
@@ -57,11 +59,16 @@ const Servicos = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold">Serviços Financeiros</h2>
-        <p className="text-muted-foreground">
-          Acesso rápido aos seus serviços favoritos
-        </p>
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+        <div>
+          <h2 className="text-2xl font-bold">Serviços Financeiros</h2>
+          <p className="text-muted-foreground">
+            Acesso rápido aos seus serviços favoritos
+          </p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
