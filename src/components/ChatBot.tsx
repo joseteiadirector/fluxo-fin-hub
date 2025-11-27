@@ -145,11 +145,7 @@ export const ChatBot = ({ onOpenService }: ChatBotProps) => {
     setLoading(true);
 
     try {
-      const conversationHistory = messages.map(msg => ({
-        role: msg.role,
-        content: msg.content
-      }));
-
+      // Não enviar histórico - cada pergunta é independente
       const { data: { session } } = await supabase.auth.getSession();
       
       const response = await fetch(
@@ -160,7 +156,10 @@ export const ChatBot = ({ onOpenService }: ChatBotProps) => {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${session?.access_token}`,
           },
-          body: JSON.stringify({ message: input, conversationHistory }),
+          body: JSON.stringify({ 
+            message: input,
+            conversationHistory: [] // Histórico vazio - contexto zero
+          }),
         }
       );
 
