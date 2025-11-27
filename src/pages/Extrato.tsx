@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Plus, TrendingUp, TrendingDown, Info } from "lucide-react";
+import { Plus, TrendingUp, TrendingDown, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import TransactionDialog from "@/components/TransactionDialog";
 
 interface Transaction {
   id: string;
@@ -26,7 +27,9 @@ interface ExtratoProps {
 const Extrato = ({ modoTrabalho }: ExtratoProps) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
@@ -60,18 +63,30 @@ const Extrato = ({ modoTrabalho }: ExtratoProps) => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Extrato</h2>
-          <p className="text-muted-foreground">
-            {modoTrabalho ? "Transações de Trabalho" : "Transações Pessoais"}
-          </p>
-        </div>
-        <Button className="gap-2">
-          <Plus className="h-4 w-4" />
-          Nova Transação
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
+          <ArrowLeft className="h-5 w-5" />
         </Button>
+        <div className="flex-1 flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold">Extrato</h2>
+            <p className="text-muted-foreground">
+              {modoTrabalho ? "Transações de Trabalho" : "Transações Pessoais"}
+            </p>
+          </div>
+          <Button className="gap-2" onClick={() => setDialogOpen(true)}>
+            <Plus className="h-4 w-4" />
+            Nova Transação
+          </Button>
+        </div>
       </div>
+
+      <TransactionDialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        modoTrabalho={modoTrabalho}
+        onSuccess={fetchTransactions}
+      />
 
       {loading ? (
         <div className="text-center py-12">Carregando transações...</div>
@@ -86,12 +101,8 @@ const Extrato = ({ modoTrabalho }: ExtratoProps) => {
           <CardContent>
             <div className="py-8 text-center">
               <p className="text-muted-foreground mb-4">
-                Suas transações aparecerão aqui assim que você começar a usar o app.
+                Clique em "Nova Transação" para começar a registrar suas finanças.
               </p>
-              <Button className="gap-2">
-                <Plus className="h-4 w-4" />
-                Adicionar Transação
-              </Button>
             </div>
           </CardContent>
         </Card>

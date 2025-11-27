@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, TrendingUp, Info, RefreshCw } from "lucide-react";
+import { AlertTriangle, TrendingUp, Info, RefreshCw, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { InsightsEngine } from "@/utils/insightsEngine";
@@ -30,6 +31,7 @@ const Insights = ({ modoTrabalho }: InsightsProps) => {
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const { user } = useAuth();
+  const navigate = useNavigate();
   const insightsEngine = new InsightsEngine();
 
   useEffect(() => {
@@ -129,21 +131,26 @@ const Insights = ({ modoTrabalho }: InsightsProps) => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Insights Inteligentes - {modoTrabalho ? "Trabalho" : "Pessoal"}</h2>
-          <p className="text-muted-foreground">
-            Análise automática com IA dos seus padrões financeiros
-          </p>
-        </div>
-        <Button 
-          onClick={generateNewInsights}
-          disabled={generating}
-          className="gap-2"
-        >
-          <RefreshCw className={`h-4 w-4 ${generating ? 'animate-spin' : ''}`} />
-          {generating ? "Analisando..." : "Gerar Insights"}
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
+          <ArrowLeft className="h-5 w-5" />
         </Button>
+        <div className="flex-1 flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold">Insights Inteligentes - {modoTrabalho ? "Trabalho" : "Pessoal"}</h2>
+            <p className="text-muted-foreground">
+              Análise automática com IA dos seus padrões financeiros
+            </p>
+          </div>
+          <Button 
+            onClick={generateNewInsights}
+            disabled={generating}
+            className="gap-2"
+          >
+            <RefreshCw className={`h-4 w-4 ${generating ? 'animate-spin' : ''}`} />
+            {generating ? "Analisando..." : "Gerar Insights"}
+          </Button>
+        </div>
       </div>
 
       {loading ? (

@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, TrendingDown, Wallet, CreditCard, Briefcase } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { TrendingUp, TrendingDown, Wallet, CreditCard, Briefcase, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { Link } from "react-router-dom";
+import { useInitialData } from "@/hooks/useInitialData";
+import { Link, useNavigate } from "react-router-dom";
 import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 interface DashboardProps {
@@ -18,6 +20,8 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
   const [tendenciaMensal, setTendenciaMensal] = useState<{mes: string, valor: number, previsao?: number}[]>([]);
   const [distribuicaoCategoria, setDistribuicaoCategoria] = useState<{categoria: string, valor: number}[]>([]);
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const { hasData, loading: initialLoading } = useInitialData();
 
   const COLORS = ['#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#ef4444'];
 
