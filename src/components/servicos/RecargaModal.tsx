@@ -41,6 +41,10 @@ const RecargaModal = ({ open, onClose }: RecargaModalProps) => {
       return;
     }
 
+    if (!validateCardFormat()) {
+      return;
+    }
+
     const valorNum = parseFloat(valor);
     if (valorNum <= 0) {
       toast.error("Valor inválido");
@@ -135,6 +139,50 @@ const RecargaModal = ({ open, onClose }: RecargaModalProps) => {
     return phone;
   };
 
+  const formatCardNumber = (value: string) => {
+    const cleaned = value.replace(/\D/g, '');
+    const formatted = cleaned.match(/.{1,4}/g)?.join(' ') || cleaned;
+    return formatted.substring(0, 19);
+  };
+
+  const formatExpiry = (value: string) => {
+    const cleaned = value.replace(/\D/g, '');
+    if (cleaned.length >= 2) {
+      return cleaned.substring(0, 2) + '/' + cleaned.substring(2, 4);
+    }
+    return cleaned;
+  };
+
+  const validateCardFormat = () => {
+    if (metodoPagamento !== "cartao") return true;
+    
+    const cardCleaned = numeroCartao.replace(/\s/g, '');
+    if (cardCleaned.length < 13 || cardCleaned.length > 19) {
+      toast.error("Número do cartão inválido");
+      return false;
+    }
+
+    const expiryParts = validade.split('/');
+    if (expiryParts.length !== 2 || expiryParts[0].length !== 2 || expiryParts[1].length !== 2) {
+      toast.error("Validade inválida (use MM/AA)");
+      return false;
+    }
+
+    if (cvv.length < 3 || cvv.length > 4) {
+      toast.error("CVV inválido");
+      return false;
+    }
+
+    return true;
+  };
+
+  const usarCartaoTeste = () => {
+    setNumeroCartao("5200 0000 0000 0000");
+    setValidade("12/28");
+    setCvv("123");
+    toast.info("Dados de cartão simulado preenchidos!");
+  };
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
@@ -221,13 +269,27 @@ const RecargaModal = ({ open, onClose }: RecargaModalProps) => {
             {metodoPagamento === "cartao" && (
               <Card className="bg-muted/30">
                 <CardContent className="pt-6 space-y-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <p className="text-sm text-muted-foreground">
+                      💳 Ambiente de simulação - Use dados fictícios
+                    </p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={usarCartaoTeste}
+                    >
+                      Usar Cartão de Teste
+                    </Button>
+                  </div>
+                  
                   <div className="space-y-2">
                     <Label htmlFor="numero-cartao">Número do Cartão *</Label>
                     <Input
                       id="numero-cartao"
                       placeholder="0000 0000 0000 0000"
                       value={numeroCartao}
-                      onChange={(e) => setNumeroCartao(e.target.value)}
+                      onChange={(e) => setNumeroCartao(formatCardNumber(e.target.value))}
                       maxLength={19}
                     />
                   </div>
@@ -238,7 +300,7 @@ const RecargaModal = ({ open, onClose }: RecargaModalProps) => {
                         id="validade"
                         placeholder="MM/AA"
                         value={validade}
-                        onChange={(e) => setValidade(e.target.value)}
+                        onChange={(e) => setValidade(formatExpiry(e.target.value))}
                         maxLength={5}
                       />
                     </div>
@@ -248,7 +310,7 @@ const RecargaModal = ({ open, onClose }: RecargaModalProps) => {
                         id="cvv"
                         placeholder="000"
                         value={cvv}
-                        onChange={(e) => setCvv(e.target.value)}
+                        onChange={(e) => setCvv(e.target.value.replace(/\D/g, ''))}
                         maxLength={4}
                         type="password"
                       />
