@@ -7,9 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { Settings, User, Bell, Palette, Shield } from "lucide-react";
+import { Settings, User, Bell, Palette, Shield, Moon, Sun } from "lucide-react";
 import { toast } from "sonner";
 import SimpleLayout from "@/components/SimpleLayout";
+import { useTheme } from "next-themes";
 
 interface Preferences {
   notificacoes_insights: boolean;
@@ -21,6 +22,7 @@ interface Preferences {
 
 export default function Preferencias() {
   const { user } = useAuth();
+  const { theme, setTheme } = useTheme();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   
@@ -60,10 +62,15 @@ export default function Preferencias() {
 
       // Carregar preferências do JSON
       if (data?.preferencias && typeof data.preferencias === 'object') {
+        const prefs = data.preferencias as Partial<Preferences>;
         setPreferences({
           ...preferences,
-          ...(data.preferencias as Partial<Preferences>)
+          ...prefs
         });
+        // Aplicar tema salvo
+        if (prefs.tema_escuro !== undefined) {
+          setTheme(prefs.tema_escuro ? "dark" : "light");
+        }
       }
     } catch (error) {
       console.error("Erro ao carregar perfil:", error);
@@ -227,17 +234,26 @@ export default function Preferencias() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <div>
-                  <Label>Tema Escuro</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Ativar modo escuro permanentemente
-                  </p>
+                <div className="flex items-center gap-3">
+                  {theme === "dark" ? (
+                    <Moon className="w-5 h-5 text-primary" />
+                  ) : (
+                    <Sun className="w-5 h-5 text-primary" />
+                  )}
+                  <div>
+                    <Label className="cursor-pointer">Tema Escuro</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Ativar modo escuro permanentemente
+                    </p>
+                  </div>
                 </div>
                 <Switch
-                  checked={preferences.tema_escuro}
-                  onCheckedChange={(checked) =>
-                    setPreferences({ ...preferences, tema_escuro: checked })
-                  }
+                  checked={theme === "dark"}
+                  onCheckedChange={(checked) => {
+                    setTheme(checked ? "dark" : "light");
+                    setPreferences({ ...preferences, tema_escuro: checked });
+                    toast.success(checked ? "Tema escuro ativado" : "Tema claro ativado");
+                  }}
                 />
               </div>
             </CardContent>
