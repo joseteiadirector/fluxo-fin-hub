@@ -156,7 +156,7 @@ export default function Ofertas() {
           .eq("user_id", user?.id)
           .eq("tipo_oferta", oferta.tipo_oferta)
           .eq("ativa", true)
-          .single();
+          .maybeSingle();
 
         if (!existente) {
           await supabase.from("ofertas").insert(oferta);
