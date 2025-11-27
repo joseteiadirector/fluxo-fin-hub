@@ -19,12 +19,11 @@ interface ChatBotProps {
 
 export const ChatBot = ({ onOpenService }: ChatBotProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: "assistant",
-      content: "Olá! 👋 Sou o assistente do Équilibra. Como posso ajudar você hoje? Posso te dar atalhos, explicar funcionalidades ou responder suas dúvidas sobre o app!"
-    }
-  ]);
+  const initialMessage: Message = {
+    role: "assistant",
+    content: "Olá! 👋 Sou o assistente do Équilibra. Como posso ajudar você hoje? Posso te dar atalhos, explicar funcionalidades ou responder suas dúvidas sobre o app!"
+  };
+  const [messages, setMessages] = useState<Message[]>([initialMessage]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -35,6 +34,15 @@ export const ChatBot = ({ onOpenService }: ChatBotProps) => {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
+
+  // Limpar mensagens quando fechar o chat
+  const handleClose = () => {
+    setIsOpen(false);
+    // Resetar para mensagem inicial após um pequeno delay
+    setTimeout(() => {
+      setMessages([initialMessage]);
+    }, 300);
+  };
 
   const handleShortcut = (shortcut: string) => {
     const shortcuts: Record<string, () => void> = {
@@ -221,7 +229,7 @@ export const ChatBot = ({ onOpenService }: ChatBotProps) => {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => setIsOpen(false)}
+                onClick={handleClose}
                 className="h-8 w-8"
               >
                 <X className="h-4 w-4" />
