@@ -1,8 +1,15 @@
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CreditCard, Smartphone, Gift, ArrowRight } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { CreditCard, Smartphone, Gift, ArrowRight, Coins, Shield, PiggyBank } from "lucide-react";
+import CashbackModal from "@/components/servicos/CashbackModal";
+import SegurosModal from "@/components/servicos/SegurosModal";
+import EmprestimosModal from "@/components/servicos/EmprestimosModal";
 
 const Servicos = () => {
+  const [selectedServico, setSelectedServico] = useState<string | null>(null);
+
   const servicos = [
     {
       id: "pix",
@@ -24,6 +31,27 @@ const Servicos = () => {
       descricao: "Gerencie VR, VA e VT",
       icon: Gift,
       cor: "green-500"
+    },
+    {
+      id: "cashback",
+      titulo: "Cashback",
+      descricao: "Retorno em dinheiro de compras",
+      icon: Coins,
+      cor: "amber-500"
+    },
+    {
+      id: "seguros",
+      titulo: "Seguros",
+      descricao: "Proteção e segurança",
+      icon: Shield,
+      cor: "purple-500"
+    },
+    {
+      id: "emprestimos",
+      titulo: "Empréstimos",
+      descricao: "Crédito pessoal simulado",
+      icon: PiggyBank,
+      cor: "pink-500"
     }
   ];
 
@@ -40,7 +68,7 @@ const Servicos = () => {
         {servicos.map((servico) => {
           const Icon = servico.icon;
           return (
-            <Card key={servico.id} className="hover:shadow-lg transition-shadow">
+            <Card key={servico.id} className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setSelectedServico(servico.id)}>
               <CardHeader>
                 <div className={`h-12 w-12 rounded-full bg-${servico.cor}/10 flex items-center justify-center mb-3`}>
                   <Icon className={`h-6 w-6 text-${servico.cor}`} />
@@ -49,7 +77,7 @@ const Servicos = () => {
                 <CardDescription>{servico.descricao}</CardDescription>
               </CardHeader>
               <CardContent>
-                <Button className="w-full gap-2" variant="outline">
+                <Button className="w-full gap-2" variant="outline" onClick={(e) => { e.stopPropagation(); setSelectedServico(servico.id); }}>
                   Acessar
                   <ArrowRight className="h-4 w-4" />
                 </Button>
@@ -58,6 +86,32 @@ const Servicos = () => {
           );
         })}
       </div>
+
+      {/* Modais dos Serviços */}
+      <CashbackModal 
+        open={selectedServico === "cashback"} 
+        onClose={() => setSelectedServico(null)} 
+      />
+      <SegurosModal 
+        open={selectedServico === "seguros"} 
+        onClose={() => setSelectedServico(null)} 
+      />
+      <EmprestimosModal 
+        open={selectedServico === "emprestimos"} 
+        onClose={() => setSelectedServico(null)} 
+      />
+
+      {/* Modal genérico para serviços não implementados */}
+      <Dialog open={selectedServico === "pix" || selectedServico === "recarga" || selectedServico === "beneficios"} onOpenChange={(open) => !open && setSelectedServico(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Serviço em Desenvolvimento</DialogTitle>
+          </DialogHeader>
+          <p className="text-muted-foreground">
+            Este serviço está em desenvolvimento e estará disponível em breve.
+          </p>
+        </DialogContent>
+      </Dialog>
 
       {/* Histórico de Serviços */}
       <Card>
