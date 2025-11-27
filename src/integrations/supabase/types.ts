@@ -14,7 +14,207 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      accounts: {
+        Row: {
+          atualizado_em: string | null
+          criado_em: string | null
+          id: string
+          nome_da_conta: string
+          saldo_atual: number
+          tipo_conta: string
+          user_id: string
+        }
+        Insert: {
+          atualizado_em?: string | null
+          criado_em?: string | null
+          id?: string
+          nome_da_conta: string
+          saldo_atual?: number
+          tipo_conta?: string
+          user_id: string
+        }
+        Update: {
+          atualizado_em?: string | null
+          criado_em?: string | null
+          id?: string
+          nome_da_conta?: string
+          saldo_atual?: number
+          tipo_conta?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "accounts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      insights: {
+        Row: {
+          gerado_em: string | null
+          id: string
+          lido: boolean | null
+          mensagem: string
+          origem: string
+          prioridade: number | null
+          tipo: string
+          titulo: string
+          user_id: string
+        }
+        Insert: {
+          gerado_em?: string | null
+          id?: string
+          lido?: boolean | null
+          mensagem: string
+          origem: string
+          prioridade?: number | null
+          tipo: string
+          titulo: string
+          user_id: string
+        }
+        Update: {
+          gerado_em?: string | null
+          id?: string
+          lido?: boolean | null
+          mensagem?: string
+          origem?: string
+          prioridade?: number | null
+          tipo?: string
+          titulo?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "insights_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          atualizado_em: string | null
+          avatar_url: string | null
+          criado_em: string | null
+          id: string
+          nome_completo: string | null
+          preferencias: Json | null
+        }
+        Insert: {
+          atualizado_em?: string | null
+          avatar_url?: string | null
+          criado_em?: string | null
+          id: string
+          nome_completo?: string | null
+          preferencias?: Json | null
+        }
+        Update: {
+          atualizado_em?: string | null
+          avatar_url?: string | null
+          criado_em?: string | null
+          id?: string
+          nome_completo?: string | null
+          preferencias?: Json | null
+        }
+        Relationships: []
+      }
+      services_logs: {
+        Row: {
+          criado_em: string | null
+          detalhes: Json
+          id: string
+          tipo_servico: string
+          user_id: string
+          valor: number | null
+        }
+        Insert: {
+          criado_em?: string | null
+          detalhes: Json
+          id?: string
+          tipo_servico: string
+          user_id: string
+          valor?: number | null
+        }
+        Update: {
+          criado_em?: string | null
+          detalhes?: Json
+          id?: string
+          tipo_servico?: string
+          user_id?: string
+          valor?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "services_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      transactions: {
+        Row: {
+          account_id: string
+          atualizado_em: string | null
+          categoria: string
+          criado_em: string | null
+          data: string | null
+          descricao: string
+          id: string
+          modo: string
+          tipo: string
+          user_id: string
+          valor: number
+        }
+        Insert: {
+          account_id: string
+          atualizado_em?: string | null
+          categoria: string
+          criado_em?: string | null
+          data?: string | null
+          descricao: string
+          id?: string
+          modo: string
+          tipo: string
+          user_id: string
+          valor: number
+        }
+        Update: {
+          account_id?: string
+          atualizado_em?: string | null
+          categoria?: string
+          criado_em?: string | null
+          data?: string | null
+          descricao?: string
+          id?: string
+          modo?: string
+          tipo?: string
+          user_id?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

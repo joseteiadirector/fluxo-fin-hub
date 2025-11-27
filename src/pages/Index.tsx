@@ -1,150 +1,202 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { TrendingUp, TrendingDown, Briefcase, Home, Wallet, CreditCard, Bell } from "lucide-react";
+import { TrendingUp, TrendingDown, Wallet, CreditCard, Briefcase } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { Link } from "react-router-dom";
 
-const Index = () => {
-  const [modoTrabalho, setModoTrabalho] = useState(true);
+interface DashboardProps {
+  modoTrabalho: boolean;
+}
+
+const Index = ({ modoTrabalho }: DashboardProps) => {
+  const [saldoAtual, setSaldoAtual] = useState(0);
+  const [previsaoMes, setPrevisaoMes] = useState(0);
+  const [gastosMes, setGastosMes] = useState(0);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      fetchDashboardData();
+    }
+  }, [user, modoTrabalho]);
+
+  const fetchDashboardData = async () => {
+    const modo = modoTrabalho ? "trabalho" : "pessoal";
+    
+    // Buscar saldo da conta principal
+    const { data: accounts } = await supabase
+      .from("accounts")
+      .select("saldo_atual")
+      .eq("user_id", user?.id)
+      .eq("tipo_conta", "principal")
+      .single();
+
+    if (accounts) {
+      setSaldoAtual(Number(accounts.saldo_atual));
+    }
+
+    // Buscar transações do mês atual
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+    
+    const { data: transactions } = await supabase
+      .from("transactions")
+      .select("valor, tipo")
+      .eq("user_id", user?.id)
+      .eq("modo", modo)
+      .gte("data", firstDay.toISOString());
+
+    if (transactions) {
+      const gastos = transactions
+        .filter(t => t.tipo === "saida")
+        .reduce((sum, t) => sum + Number(t.valor), 0);
+      
+      setGastosMes(gastos);
+      
+      // Previsão simples baseada na proporção do mês
+      const dayOfMonth = now.getDate();
+      const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+      const projecao = saldoAtual - (gastos / dayOfMonth) * (daysInMonth - dayOfMonth);
+      setPrevisaoMes(projecao);
+    }
+  };
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    }).format(value);
+  };
+
+  const getPrevisaoStatus = () => {
+    if (previsaoMes > saldoAtual * 0.5) {
+      return { text: "Projeção positiva", color: "blue-500" };
+    } else if (previsaoMes > 0) {
+      return { text: "Atenção ao saldo", color: "amber-500" };
+    } else {
+      return { text: "Risco alto", color: "red-500" };
+    }
+  };
+
+  const previsaoStatus = getPrevisaoStatus();
+  const percentualGasto = saldoAtual > 0 ? Math.round((gastosMes / saldoAtual) * 100) : 0;
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header com Toggle */}
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Wallet className="h-6 w-6 text-primary" />
-              <h1 className="text-xl font-bold">Workflow</h1>
+    <div className="space-y-8">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold mb-1">
+          {modoTrabalho ? "Dashboard - Trabalho" : "Dashboard - Pessoal"}
+        </h2>
+        <p className="text-muted-foreground">
+          Bem-vindo ao seu assistente financeiro inteligente
+        </p>
+      </div>
+
+      {/* Cards de Resumo */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Saldo Atual
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">{formatCurrency(saldoAtual)}</div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Atualizado agora
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className={`bg-gradient-to-br from-${previsaoStatus.color}/10 to-${previsaoStatus.color}/5 border-${previsaoStatus.color}/20`}>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Previsão do Mês
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className={`text-3xl font-bold text-${previsaoStatus.color}`}>
+              {formatCurrency(previsaoMes)}
             </div>
-            
-            {/* Toggle Trabalho/Pessoal */}
-            <div className="flex items-center gap-3 bg-muted/50 rounded-full px-4 py-2">
-              <div className={`flex items-center gap-2 transition-opacity ${!modoTrabalho ? 'opacity-50' : ''}`}>
-                <Home className="h-4 w-4" />
-                <span className="text-sm font-medium">Pessoal</span>
-              </div>
-              <Switch 
-                checked={modoTrabalho} 
-                onCheckedChange={setModoTrabalho}
-                className="data-[state=checked]:bg-primary"
-              />
-              <div className={`flex items-center gap-2 transition-opacity ${modoTrabalho ? 'opacity-50' : ''}`}>
-                <Briefcase className="h-4 w-4" />
-                <span className="text-sm font-medium">Trabalho</span>
-              </div>
+            <div className="flex items-center gap-1 mt-1">
+              <TrendingUp className={`h-4 w-4 text-${previsaoStatus.color}`} />
+              <p className={`text-xs text-${previsaoStatus.color}`}>{previsaoStatus.text}</p>
             </div>
+          </CardContent>
+        </Card>
 
-            <Button variant="ghost" size="icon">
-              <Bell className="h-5 w-5" />
-            </Button>
-          </div>
-        </div>
-      </header>
+        <Card className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 border-amber-500/20">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Gastos no Mês
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-amber-500">
+              {formatCurrency(gastosMes)}
+            </div>
+            <div className="flex items-center gap-1 mt-1">
+              <TrendingDown className="h-4 w-4 text-amber-500" />
+              <p className="text-xs text-amber-500">{percentualGasto}% do saldo</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
-      {/* Dashboard */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold mb-1">
-            {modoTrabalho ? "Dashboard - Trabalho" : "Dashboard - Pessoal"}
-          </h2>
-          <p className="text-muted-foreground">
-            Bem-vindo ao seu assistente financeiro inteligente
-          </p>
-        </div>
-
-        {/* Cards de Resumo */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Saldo Atual
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">R$ 2.450,00</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Atualizado agora
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-500/20">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Previsão do Mês
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-blue-500">R$ 1.890,00</div>
-              <div className="flex items-center gap-1 mt-1">
-                <TrendingUp className="h-4 w-4 text-blue-500" />
-                <p className="text-xs text-blue-500">Projeção positiva</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 border-amber-500/20">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Gastos no Mês
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-amber-500">R$ 1.320,00</div>
-              <div className="flex items-center gap-1 mt-1">
-                <TrendingDown className="h-4 w-4 text-amber-500" />
-                <p className="text-xs text-amber-500">54% do orçamento</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Serviços Rápidos */}
+      {/* Serviços Rápidos */}
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Acesso Rápido</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <CreditCard className="h-6 w-6 text-primary" />
+          <Link to="/servicos">
+            <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-3">
+                  <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <CreditCard className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">PIX</h3>
+                    <p className="text-sm text-muted-foreground">Transferir agora</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold">PIX</h3>
-                  <p className="text-sm text-muted-foreground">Transferir agora</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </Link>
 
-          <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="h-12 w-12 rounded-full bg-blue-500/10 flex items-center justify-center">
-                  <Wallet className="h-6 w-6 text-blue-500" />
+          <Link to="/servicos">
+            <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-3">
+                  <div className="h-12 w-12 rounded-full bg-blue-500/10 flex items-center justify-center">
+                    <Wallet className="h-6 w-6 text-blue-500" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">Recarga</h3>
+                    <p className="text-sm text-muted-foreground">Celular pré-pago</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold">Recarga</h3>
-                  <p className="text-sm text-muted-foreground">Celular pré-pago</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </Link>
 
-          <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="h-12 w-12 rounded-full bg-green-500/10 flex items-center justify-center">
-                  <Briefcase className="h-6 w-6 text-green-500" />
+          <Link to="/servicos">
+            <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-3">
+                  <div className="h-12 w-12 rounded-full bg-green-500/10 flex items-center justify-center">
+                    <Briefcase className="h-6 w-6 text-green-500" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">Benefícios</h3>
+                    <p className="text-sm text-muted-foreground">VR/VA/VT</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold">Benefícios</h3>
-                  <p className="text-sm text-muted-foreground">VR/VA/VT</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
-      </main>
+      </div>
     </div>
   );
 };
