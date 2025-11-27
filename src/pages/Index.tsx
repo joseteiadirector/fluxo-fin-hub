@@ -57,7 +57,7 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
         supabase.removeChannel(channel);
       };
     }
-  }, [user, modoTrabalho]);
+  }, [user, modoTrabalho, hasData]);
 
   const fetchDashboardData = async () => {
     const modo = modoTrabalho ? "trabalho" : "pessoal";
