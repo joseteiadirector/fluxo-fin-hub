@@ -28,6 +28,25 @@ export default function Ofertas() {
     if (user) {
       fetchOfertas();
       gerarOfertasPersonalizadas();
+      
+      // Configurar realtime para ofertas
+      const channel = supabase
+        .channel('ofertas-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'ofertas',
+            filter: `user_id=eq.${user.id}`
+          },
+          () => fetchOfertas()
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
     }
   }, [user]);
 

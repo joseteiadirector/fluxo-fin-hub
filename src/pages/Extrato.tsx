@@ -34,6 +34,33 @@ const Extrato = ({ modoTrabalho }: ExtratoProps) => {
   useEffect(() => {
     if (user) {
       fetchTransactions();
+      
+      // Configurar realtime para transactions
+      const modo = modoTrabalho ? "trabalho" : "pessoal";
+      const channel = supabase
+        .channel('transactions-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'transactions',
+            filter: `user_id=eq.${user.id}`
+          },
+          (payload) => {
+            // Recarregar apenas se for do modo correto
+            if (payload.new && (payload.new as any).modo === modo) {
+              fetchTransactions();
+            } else if (payload.old && (payload.old as any).modo === modo) {
+              fetchTransactions();
+            }
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
     }
   }, [user, modoTrabalho]);
 
