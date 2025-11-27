@@ -46,32 +46,34 @@ const Layout = ({ children, modoTrabalho, setModoTrabalho }: LayoutProps) => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Wallet className="h-6 w-6 text-primary" />
-              <h1 className="text-xl font-bold">Équilibra</h1>
+        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
+          <div className="flex items-center justify-between gap-2 sm:gap-4">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <Wallet className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+              <h1 className="text-lg sm:text-xl font-bold">Équilibra</h1>
             </div>
             
             {/* Toggle Trabalho/Pessoal */}
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center gap-3 bg-muted/50 rounded-full px-4 py-2 cursor-help">
-                    <div className={`flex items-center gap-2 transition-opacity ${!modoTrabalho ? 'opacity-50' : ''}`}>
+                  <div className="flex items-center gap-1.5 sm:gap-3 bg-muted/50 rounded-full px-2 sm:px-4 py-1.5 sm:py-2 cursor-help">
+                    <div className={`hidden sm:flex items-center gap-2 transition-opacity ${!modoTrabalho ? 'opacity-50' : ''}`}>
                       <Home className="h-4 w-4" />
                       <span className="text-sm font-medium">Pessoal</span>
                     </div>
+                    <Home className={`sm:hidden h-4 w-4 ${!modoTrabalho ? 'opacity-50' : ''}`} />
                     <Switch 
                       checked={modoTrabalho} 
                       onCheckedChange={setModoTrabalho}
-                      className="data-[state=checked]:bg-primary"
+                      className="data-[state=checked]:bg-primary scale-75 sm:scale-100"
                     />
-                    <div className={`flex items-center gap-2 transition-opacity ${modoTrabalho ? 'opacity-50' : ''}`}>
+                    <div className={`hidden sm:flex items-center gap-2 transition-opacity ${modoTrabalho ? 'opacity-50' : ''}`}>
                       <Briefcase className="h-4 w-4" />
                       <span className="text-sm font-medium">Trabalho</span>
                     </div>
-                    <HelpCircle className="h-4 w-4 text-muted-foreground ml-1" />
+                    <Briefcase className={`sm:hidden h-4 w-4 ${modoTrabalho ? 'opacity-50' : ''}`} />
+                    <HelpCircle className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground ml-0.5 sm:ml-1" />
                   </div>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-xs">
@@ -81,12 +83,12 @@ const Layout = ({ children, modoTrabalho, setModoTrabalho }: LayoutProps) => {
               </Tooltip>
             </TooltipProvider>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <Bell className="h-5 w-5" />
+                    <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-10 sm:w-10">
+                      <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>Notificações</TooltipContent>
@@ -96,8 +98,8 @@ const Layout = ({ children, modoTrabalho, setModoTrabalho }: LayoutProps) => {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" onClick={() => signOut()}>
-                      <LogOut className="h-5 w-5" />
+                    <Button variant="ghost" size="icon" onClick={() => signOut()} className="h-8 w-8 sm:h-10 sm:w-10">
+                      <LogOut className="h-4 w-4 sm:h-5 sm:w-5" />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>Sair</TooltipContent>
@@ -109,9 +111,9 @@ const Layout = ({ children, modoTrabalho, setModoTrabalho }: LayoutProps) => {
       </header>
 
       {/* Navigation */}
-      <nav className="border-b border-border bg-card/30">
-        <div className="container mx-auto px-4">
-          <div className="flex gap-1">
+      <nav className="border-b border-border bg-card/30 overflow-x-auto">
+        <div className="container mx-auto px-2 sm:px-4">
+          <div className="flex gap-0.5 sm:gap-1 min-w-max">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
@@ -119,14 +121,15 @@ const Layout = ({ children, modoTrabalho, setModoTrabalho }: LayoutProps) => {
                 <Link key={item.path} to={item.path}>
                   <Button
                     variant="ghost"
-                    className={`gap-2 rounded-none border-b-2 ${
+                    size="sm"
+                    className={`gap-1 sm:gap-2 rounded-none border-b-2 text-xs sm:text-sm px-2 sm:px-4 ${
                       isActive
                         ? "border-primary text-primary"
                         : "border-transparent"
                     }`}
                   >
-                    <Icon className="h-4 w-4" />
-                    {item.label}
+                    <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                    <span className="hidden xs:inline">{item.label}</span>
                   </Button>
                 </Link>
               );
@@ -136,7 +139,7 @@ const Layout = ({ children, modoTrabalho, setModoTrabalho }: LayoutProps) => {
       </nav>
 
       {/* Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {children}
       </main>
     </div>

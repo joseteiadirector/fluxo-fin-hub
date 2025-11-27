@@ -225,12 +225,12 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
   const percentualGasto = saldoAtual > 0 ? Math.round((gastosMes / saldoAtual) * 100) : 0;
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold mb-1">
+    <div className="space-y-6 sm:space-y-8 animate-fade-in">
+      <div className="mb-4 sm:mb-6">
+        <h2 className="text-xl sm:text-2xl font-bold mb-1">
           {modoTrabalho ? "Dashboard - Trabalho" : "Dashboard - Pessoal"}
         </h2>
-        <p className="text-muted-foreground">
+        <p className="text-sm sm:text-base text-muted-foreground">
           Bem-vindo ao seu assistente financeiro inteligente
         </p>
       </div>
@@ -239,7 +239,7 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
       <FinancialMoodCard />
 
       {/* Cards de Resumo */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         {/* Saldo Atual */}
         <Card className="group cursor-pointer bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
           <CardHeader className="pb-3">
@@ -330,7 +330,7 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
       </div>
 
       {/* Gráficos */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Evolução de Gastos Diários */}
         <Card>
           <CardHeader>
@@ -347,7 +347,7 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
             </div>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={200} className="sm:h-[250px]">
               <LineChart data={[...gastosDiarios]}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                 <XAxis dataKey="dia" label={{ value: "Dia", position: "insideBottom", offset: -5 }} />
@@ -378,7 +378,7 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
             </div>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={200} className="sm:h-[250px]">
               <LineChart data={[...tendenciaMensal]}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                 <XAxis dataKey="mes" />
