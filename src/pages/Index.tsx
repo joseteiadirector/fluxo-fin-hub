@@ -4,6 +4,7 @@ import { TrendingUp, TrendingDown, Wallet, CreditCard, Briefcase } from "lucide-
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "react-router-dom";
+import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 interface DashboardProps {
   modoTrabalho: boolean;
@@ -13,11 +14,34 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
   const [saldoAtual, setSaldoAtual] = useState(0);
   const [previsaoMes, setPrevisaoMes] = useState(0);
   const [gastosMes, setGastosMes] = useState(0);
+  const [gastosDiarios, setGastosDiarios] = useState<{dia: number, valor: number}[]>([]);
+  const [tendenciaMensal, setTendenciaMensal] = useState<{mes: string, valor: number, previsao?: number}[]>([]);
+  const [distribuicaoCategoria, setDistribuicaoCategoria] = useState<{categoria: string, valor: number}[]>([]);
   const { user } = useAuth();
+
+  const COLORS = ['#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#ef4444'];
 
   useEffect(() => {
     if (user) {
       fetchDashboardData();
+      
+      // Configurar realtime para atualizações automáticas
+      const channel = supabase
+        .channel('dashboard-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'transactions'
+          },
+          () => fetchDashboardData()
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
     }
   }, [user, modoTrabalho]);
 
@@ -42,12 +66,14 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
     
     const { data: transactions } = await supabase
       .from("transactions")
-      .select("valor, tipo")
+      .select("valor, tipo, categoria, data")
       .eq("user_id", user?.id)
       .eq("modo", modo)
-      .gte("data", firstDay.toISOString());
+      .gte("data", firstDay.toISOString())
+      .order("data", { ascending: true });
 
     if (transactions) {
+      // Gastos totais do mês
       const gastos = transactions
         .filter(t => t.tipo === "saida")
         .reduce((sum, t) => sum + Number(t.valor), 0);
@@ -59,7 +85,85 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
       const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
       const projecao = saldoAtual - (gastos / dayOfMonth) * (daysInMonth - dayOfMonth);
       setPrevisaoMes(projecao);
+
+      // Processar gastos diários
+      const gastosPorDia: { [key: number]: number } = {};
+      transactions
+        .filter(t => t.tipo === "saida")
+        .forEach(t => {
+          const dia = new Date(t.data).getDate();
+          gastosPorDia[dia] = (gastosPorDia[dia] || 0) + Number(t.valor);
+        });
+      
+      const chartDiario = Object.entries(gastosPorDia).map(([dia, valor]) => ({
+        dia: Number(dia),
+        valor: Number(valor.toFixed(2))
+      })).sort((a, b) => a.dia - b.dia);
+      setGastosDiarios(chartDiario);
+
+      // Distribuição por categoria
+      const gastosPorCategoria: { [key: string]: number } = {};
+      transactions
+        .filter(t => t.tipo === "saida")
+        .forEach(t => {
+          gastosPorCategoria[t.categoria] = (gastosPorCategoria[t.categoria] || 0) + Number(t.valor);
+        });
+      
+      const chartCategoria = Object.entries(gastosPorCategoria).map(([categoria, valor]) => ({
+        categoria,
+        valor: Number(valor.toFixed(2))
+      }));
+      setDistribuicaoCategoria(chartCategoria);
+
+      // Tendência mensal (últimos 6 meses + previsão)
+      await calcularTendenciaMensal(modo);
     }
+  };
+
+  const calcularTendenciaMensal = async (modo: string) => {
+    const now = new Date();
+    const meses = [];
+    
+    for (let i = 5; i >= 0; i--) {
+      const mesData = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const proximoMes = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
+      
+      const { data } = await supabase
+        .from("transactions")
+        .select("valor, tipo")
+        .eq("user_id", user?.id)
+        .eq("modo", modo)
+        .gte("data", mesData.toISOString())
+        .lt("data", proximoMes.toISOString());
+
+      const gastos = data
+        ?.filter(t => t.tipo === "saida")
+        .reduce((sum, t) => sum + Number(t.valor), 0) || 0;
+
+      meses.push({
+        mes: mesData.toLocaleDateString("pt-BR", { month: "short" }),
+        valor: Number(gastos.toFixed(2))
+      });
+    }
+
+    // Regressão linear simples para previsão
+    const n = meses.length;
+    const sumX = meses.reduce((sum, _, i) => sum + i, 0);
+    const sumY = meses.reduce((sum, m) => sum + m.valor, 0);
+    const sumXY = meses.reduce((sum, m, i) => sum + i * m.valor, 0);
+    const sumX2 = meses.reduce((sum, _, i) => sum + i * i, 0);
+
+    const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+    const intercept = (sumY - slope * sumX) / n;
+    const previsaoProxMes = slope * n + intercept;
+
+    meses.push({
+      mes: "Prev",
+      valor: 0,
+      previsao: Number(Math.max(0, previsaoProxMes).toFixed(2))
+    });
+
+    setTendenciaMensal(meses);
   };
 
   const formatCurrency = (value: number) => {
@@ -140,6 +244,78 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
               <TrendingDown className="h-4 w-4 text-amber-500" />
               <p className="text-xs text-amber-500">{percentualGasto}% do saldo</p>
             </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Gráficos */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Evolução de Gastos Diários */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Gastos Diários no Mês</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={250}>
+              <LineChart data={gastosDiarios}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                <XAxis dataKey="dia" label={{ value: "Dia", position: "insideBottom", offset: -5 }} />
+                <YAxis label={{ value: "R$", angle: -90, position: "insideLeft" }} />
+                <Tooltip 
+                  formatter={(value: number) => formatCurrency(value)}
+                  labelFormatter={(label) => `Dia ${label}`}
+                />
+                <Line type="monotone" dataKey="valor" stroke="#8b5cf6" strokeWidth={2} dot={{ r: 4 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        {/* Tendência Mensal com Previsão */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Tendência Mensal (6 meses + Previsão)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={250}>
+              <LineChart data={tendenciaMensal}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                <XAxis dataKey="mes" />
+                <YAxis label={{ value: "R$", angle: -90, position: "insideLeft" }} />
+                <Tooltip formatter={(value: number) => formatCurrency(value)} />
+                <Legend />
+                <Line type="monotone" dataKey="valor" name="Real" stroke="#10b981" strokeWidth={2} dot={{ r: 4 }} />
+                <Line type="monotone" dataKey="previsao" name="Previsão" stroke="#f59e0b" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 4 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        {/* Distribuição por Categoria */}
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle>Distribuição de Gastos por Categoria</CardTitle>
+          </CardHeader>
+          <CardContent className="flex justify-center">
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={distribuicaoCategoria}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={(entry: any) => `${entry.categoria} (${(entry.percent * 100).toFixed(0)}%)`}
+                  outerRadius={100}
+                  fill="#8884d8"
+                  dataKey="valor"
+                >
+                  {distribuicaoCategoria.map((_, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(value: number) => formatCurrency(value)} />
+              </PieChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
       </div>
