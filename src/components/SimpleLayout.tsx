@@ -1,34 +1,31 @@
-import { ReactNode, useState } from "react";
+import { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { 
   Wallet, 
-  Home, 
-  Briefcase, 
   Bell, 
   LogOut, 
   LayoutDashboard,
   Receipt,
   Lightbulb,
   CreditCard,
-  HelpCircle
+  Target,
+  Gift,
+  Settings as SettingsIcon
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Link, useLocation } from "react-router-dom";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
-interface LayoutProps {
+interface SimpleLayoutProps {
   children: ReactNode;
-  modoTrabalho: boolean;
-  setModoTrabalho: (modo: boolean) => void;
 }
 
-const Layout = ({ children, modoTrabalho, setModoTrabalho }: LayoutProps) => {
+const SimpleLayout = ({ children }: SimpleLayoutProps) => {
   const { signOut } = useAuth();
   const location = useLocation();
 
@@ -37,9 +34,9 @@ const Layout = ({ children, modoTrabalho, setModoTrabalho }: LayoutProps) => {
     { path: "/extrato", icon: Receipt, label: "Extrato" },
     { path: "/servicos", icon: CreditCard, label: "Serviços" },
     { path: "/insights", icon: Lightbulb, label: "Insights" },
-    { path: "/metas", icon: HelpCircle, label: "Metas" },
-    { path: "/ofertas", icon: HelpCircle, label: "Ofertas" },
-    { path: "/preferencias", icon: HelpCircle, label: "Config" },
+    { path: "/metas", icon: Target, label: "Metas" },
+    { path: "/ofertas", icon: Gift, label: "Ofertas" },
+    { path: "/preferencias", icon: SettingsIcon, label: "Preferências" },
   ];
 
   return (
@@ -52,34 +49,6 @@ const Layout = ({ children, modoTrabalho, setModoTrabalho }: LayoutProps) => {
               <Wallet className="h-6 w-6 text-primary" />
               <h1 className="text-xl font-bold">Équilibra</h1>
             </div>
-            
-            {/* Toggle Trabalho/Pessoal */}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="flex items-center gap-3 bg-muted/50 rounded-full px-4 py-2 cursor-help">
-                    <div className={`flex items-center gap-2 transition-opacity ${!modoTrabalho ? 'opacity-50' : ''}`}>
-                      <Home className="h-4 w-4" />
-                      <span className="text-sm font-medium">Pessoal</span>
-                    </div>
-                    <Switch 
-                      checked={modoTrabalho} 
-                      onCheckedChange={setModoTrabalho}
-                      className="data-[state=checked]:bg-primary"
-                    />
-                    <div className={`flex items-center gap-2 transition-opacity ${modoTrabalho ? 'opacity-50' : ''}`}>
-                      <Briefcase className="h-4 w-4" />
-                      <span className="text-sm font-medium">Trabalho</span>
-                    </div>
-                    <HelpCircle className="h-4 w-4 text-muted-foreground ml-1" />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent className="max-w-xs">
-                  <p className="font-semibold mb-1">Modo Pessoal vs Trabalho</p>
-                  <p className="text-sm">Separe suas finanças pessoais (despesas do dia a dia) das profissionais (gastos de trabalho/freelance). O app filtra transações, insights e relatórios automaticamente!</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
 
             <div className="flex items-center gap-2">
               <TooltipProvider>
@@ -109,7 +78,7 @@ const Layout = ({ children, modoTrabalho, setModoTrabalho }: LayoutProps) => {
       </header>
 
       {/* Navigation */}
-      <nav className="border-b border-border bg-card/30">
+      <nav className="border-b border-border bg-card/30 overflow-x-auto">
         <div className="container mx-auto px-4">
           <div className="flex gap-1">
             {navItems.map((item) => {
@@ -119,7 +88,7 @@ const Layout = ({ children, modoTrabalho, setModoTrabalho }: LayoutProps) => {
                 <Link key={item.path} to={item.path}>
                   <Button
                     variant="ghost"
-                    className={`gap-2 rounded-none border-b-2 ${
+                    className={`gap-2 rounded-none border-b-2 whitespace-nowrap ${
                       isActive
                         ? "border-primary text-primary"
                         : "border-transparent"
@@ -136,11 +105,11 @@ const Layout = ({ children, modoTrabalho, setModoTrabalho }: LayoutProps) => {
       </nav>
 
       {/* Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main>
         {children}
       </main>
     </div>
   );
 };
 
-export default Layout;
+export default SimpleLayout;

@@ -11,6 +11,9 @@ import Auth from "./pages/Auth";
 import Extrato from "./pages/Extrato";
 import Servicos from "./pages/Servicos";
 import Insights from "./pages/Insights";
+import Metas from "./pages/Metas";
+import Ofertas from "./pages/Ofertas";
+import Preferencias from "./pages/Preferencias";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -63,6 +66,30 @@ const App = () => {
                   <Layout modoTrabalho={modoTrabalho} setModoTrabalho={setModoTrabalho}>
                     <Insights modoTrabalho={modoTrabalho} />
                   </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/metas"
+              element={
+                <ProtectedRoute>
+                  <Metas />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/ofertas"
+              element={
+                <ProtectedRoute>
+                  <Ofertas />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/preferencias"
+              element={
+                <ProtectedRoute>
+                  <Preferencias />
                 </ProtectedRoute>
               }
             />

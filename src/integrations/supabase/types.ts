@@ -96,6 +96,75 @@ export type Database = {
           },
         ]
       }
+      metas: {
+        Row: {
+          atualizado_em: string | null
+          categoria: string
+          criado_em: string | null
+          id: string
+          mes_referencia: string
+          modo: string
+          user_id: string
+          valor_limite: number
+        }
+        Insert: {
+          atualizado_em?: string | null
+          categoria: string
+          criado_em?: string | null
+          id?: string
+          mes_referencia: string
+          modo: string
+          user_id: string
+          valor_limite: number
+        }
+        Update: {
+          atualizado_em?: string | null
+          categoria?: string
+          criado_em?: string | null
+          id?: string
+          mes_referencia?: string
+          modo?: string
+          user_id?: string
+          valor_limite?: number
+        }
+        Relationships: []
+      }
+      ofertas: {
+        Row: {
+          ativa: boolean | null
+          criado_em: string | null
+          descricao: string
+          detalhes: Json
+          id: string
+          tipo_oferta: string
+          titulo: string
+          user_id: string
+          validade: string | null
+        }
+        Insert: {
+          ativa?: boolean | null
+          criado_em?: string | null
+          descricao: string
+          detalhes?: Json
+          id?: string
+          tipo_oferta: string
+          titulo: string
+          user_id: string
+          validade?: string | null
+        }
+        Update: {
+          ativa?: boolean | null
+          criado_em?: string | null
+          descricao?: string
+          detalhes?: Json
+          id?: string
+          tipo_oferta?: string
+          titulo?: string
+          user_id?: string
+          validade?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           atualizado_em: string | null
