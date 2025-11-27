@@ -245,7 +245,7 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
             <div className="text-3xl font-bold">{formatCurrency(saldoAtual)}</div>
             <div className="space-y-1">
               <p className="text-xs text-muted-foreground">
-                💰 <strong>O que é:</strong> Dinheiro disponível na sua conta agora
+                💰 Dinheiro disponível na sua conta agora
               </p>
               <p className="text-xs text-primary font-medium">
                 ✓ Atualizado em tempo real
@@ -271,7 +271,7 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
             </div>
             <div className="space-y-1">
               <p className="text-xs text-muted-foreground">
-                🔮 <strong>O que é:</strong> Quanto você terá no fim do mês se continuar gastando no ritmo atual
+                🔮 Quanto você terá no fim do mês se continuar gastando no ritmo atual
               </p>
               <div className="flex items-center gap-1">
                 <TrendingUp className={`h-3 w-3 text-${previsaoStatus.color}`} />
@@ -300,7 +300,7 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
             </div>
             <div className="space-y-2">
               <p className="text-xs text-muted-foreground">
-                📊 <strong>O que é:</strong> Total de despesas desde o dia 1º até hoje
+                📊 Total de despesas desde o dia 1º até hoje
               </p>
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-xs">
