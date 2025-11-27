@@ -80,48 +80,46 @@ const Auth = () => {
       }}
     >
       {/* Branding à esquerda */}
-      <div className="flex-1 z-10 max-w-2xl">
-        <div className="space-y-8">
-          {/* Título principal centralizado */}
-          <div className="flex items-center justify-center gap-3">
-            <div className="h-16 w-16 rounded-full bg-primary/20 backdrop-blur-sm flex items-center justify-center">
-              <Wallet className="h-8 w-8 text-primary" />
-            </div>
-            <h1 className="text-6xl lg:text-7xl font-bold text-white drop-shadow-lg">Équilibra</h1>
+      <div className="flex-1 z-10 relative h-full flex flex-col justify-between py-16">
+        {/* Título principal centralizado no topo */}
+        <div className="flex items-center justify-center gap-3">
+          <div className="h-16 w-16 rounded-full bg-primary/20 backdrop-blur-sm flex items-center justify-center">
+            <Wallet className="h-8 w-8 text-primary" />
           </div>
-          
-          {/* Slogan à direita abaixo */}
-          <div className="flex justify-end pr-8">
-            <div className="space-y-2 text-right">
-              <p className="text-xl lg:text-2xl text-white font-medium drop-shadow-md">
-                Seu assistente financeiro universitário
-              </p>
-              <p className="text-base text-white/90 drop-shadow-md">
-                Equilibrando trabalho, estudo e vida
-              </p>
-            </div>
-          </div>
-          
-          {!showForm && (
-            <div className="flex justify-center gap-4 pt-4">
-              <Button 
-                size="lg" 
-                onClick={() => { setShowForm(true); setIsSignUp(false); }}
-                className="text-lg px-8"
-              >
-                Entrar
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                onClick={() => { setShowForm(true); setIsSignUp(true); }}
-                className="text-lg px-8 bg-white/10 backdrop-blur-sm text-white border-white/30 hover:bg-white/20"
-              >
-                Cadastrar
-              </Button>
-            </div>
-          )}
+          <h1 className="text-6xl lg:text-7xl font-bold text-white drop-shadow-lg">Équilibra</h1>
         </div>
+        
+        {/* Slogan no canto inferior direito */}
+        <div className="flex justify-end items-end">
+          <div className="space-y-2 text-right max-w-md pr-8">
+            <p className="text-xl lg:text-2xl text-white font-medium drop-shadow-md">
+              Seu assistente financeiro universitário
+            </p>
+            <p className="text-base text-white/90 drop-shadow-md">
+              Equilibrando trabalho, estudo e vida
+            </p>
+          </div>
+        </div>
+        
+        {!showForm && (
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-4">
+            <Button 
+              size="lg" 
+              onClick={() => { setShowForm(true); setIsSignUp(false); }}
+              className="text-lg px-8"
+            >
+              Entrar
+            </Button>
+            <Button 
+              size="lg" 
+              variant="outline" 
+              onClick={() => { setShowForm(true); setIsSignUp(true); }}
+              className="text-lg px-8 bg-white/10 backdrop-blur-sm text-white border-white/30 hover:bg-white/20"
+            >
+              Cadastrar
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Formulário à direita */}
