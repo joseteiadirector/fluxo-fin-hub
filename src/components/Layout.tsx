@@ -85,6 +85,19 @@ const Layout = ({ children, modoTrabalho, setModoTrabalho }: LayoutProps) => {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
+                    <Link to="/auth">
+                      <Button variant="ghost" size="icon">
+                        <Home className="h-5 w-5" />
+                      </Button>
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent>Ir para Login</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
                     <Button variant="ghost" size="icon">
                       <Bell className="h-5 w-5" />
                     </Button>

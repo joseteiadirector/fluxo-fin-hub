@@ -10,7 +10,8 @@ import {
   CreditCard,
   Target,
   Gift,
-  Settings as SettingsIcon
+  Settings as SettingsIcon,
+  Home
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Link, useLocation } from "react-router-dom";
@@ -51,6 +52,19 @@ const SimpleLayout = ({ children }: SimpleLayoutProps) => {
             </div>
 
             <div className="flex items-center gap-2">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link to="/auth">
+                      <Button variant="ghost" size="icon">
+                        <Home className="h-5 w-5" />
+                      </Button>
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent>Ir para Login</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
