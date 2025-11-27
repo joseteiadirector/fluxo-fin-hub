@@ -145,26 +145,32 @@ export const ChatBot = ({ onOpenService }: ChatBotProps) => {
     setLoading(true);
 
     try {
-      // Não enviar histórico - cada pergunta é independente
       const { data: { session } } = await supabase.auth.getSession();
       
+      if (!session) {
+        throw new Error("Sessão não encontrada");
+      }
+
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chatbot`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${session?.access_token}`,
+            "Authorization": `Bearer ${session.access_token}`,
+            "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
           },
           body: JSON.stringify({ 
             message: input,
-            conversationHistory: [] // Histórico vazio - contexto zero
+            conversationHistory: []
           }),
         }
       );
 
       if (!response.ok) {
-        throw new Error("Erro ao enviar mensagem");
+        const errorData = await response.json();
+        console.error("Erro da API:", errorData);
+        throw new Error(errorData.error || "Erro ao enviar mensagem");
       }
 
       const data = await response.json();
