@@ -348,7 +348,7 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={250}>
-              <LineChart data={gastosDiarios}>
+              <LineChart data={[...gastosDiarios]}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                 <XAxis dataKey="dia" label={{ value: "Dia", position: "insideBottom", offset: -5 }} />
                 <YAxis label={{ value: "R$", angle: -90, position: "insideLeft" }} />
@@ -379,7 +379,7 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={250}>
-              <LineChart data={tendenciaMensal}>
+              <LineChart data={[...tendenciaMensal]}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                 <XAxis dataKey="mes" />
                 <YAxis label={{ value: "R$", angle: -90, position: "insideLeft" }} />
@@ -461,7 +461,7 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
             <ResponsiveContainer width="100%" height={400}>
               <PieChart>
                 <Pie
-                  data={distribuicaoCategoria}
+                  data={[...distribuicaoCategoria]}
                   cx="50%"
                   cy="50%"
                   labelLine={true}
@@ -486,7 +486,7 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
                   }}
                   contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
                 />
-                <Legend 
+                <Legend
                   verticalAlign="bottom" 
                   height={36}
                   formatter={(value, entry: any) => {
