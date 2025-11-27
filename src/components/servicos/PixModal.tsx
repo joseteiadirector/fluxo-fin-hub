@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/useAuth";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { CreditCard, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { Copy, ArrowLeft } from "lucide-react";
 
 interface PixModalProps {
   open: boolean;
@@ -13,84 +16,100 @@ interface PixModalProps {
 }
 
 const PixModal = ({ open, onClose }: PixModalProps) => {
-  const [chavePix, setChavePix] = useState("");
+  const [chave, setChave] = useState("");
   const [valor, setValor] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [metodoPagamento, setMetodoPagamento] = useState<"saldo" | "cartao">("saldo");
+  const [numeroCartao, setNumeroCartao] = useState("");
+  const [cvv, setCvv] = useState("");
+  const [validade, setValidade] = useState("");
+  const [loading, setLoading] = useState(false);
   const { user } = useAuth();
 
-  const [pixPaymentData, setPixPaymentData] = useState<{
-    pixCode: string;
-    qrCodeUrl: string;
-    expiresAt: number;
-    hostedInstructionsUrl: string;
-  } | null>(null);
-
   const handleTransferir = async () => {
-    if (!user?.id) {
-      toast.error("Usuário não autenticado");
+    if (!chave || !valor) {
+      toast.error("Preencha todos os campos obrigatórios");
       return;
     }
 
-    if (!chavePix || !valor) {
-      toast.error("Por favor, preencha todos os campos");
+    if (metodoPagamento === "cartao" && (!numeroCartao || !cvv || !validade)) {
+      toast.error("Preencha os dados do cartão de crédito");
       return;
     }
 
-    const valorNumerico = parseFloat(valor);
-    if (isNaN(valorNumerico) || valorNumerico <= 0) {
+    const valorNum = parseFloat(valor);
+    if (valorNum <= 0) {
       toast.error("Valor inválido");
       return;
     }
 
-    setIsLoading(true);
+    setLoading(true);
 
-    try {
-      // Chamar edge function para criar pagamento PIX via Stripe
-      const { data, error } = await supabase.functions.invoke('create-pix-payment', {
-        body: {
-          amount: Math.round(valorNumerico * 100), // Converter para centavos
-          pixKey: chavePix,
-          description: `Transferência PIX para ${chavePix}`
-        }
+    // Buscar conta principal
+    const { data: account } = await supabase
+      .from("accounts")
+      .select("id, saldo_atual")
+      .eq("user_id", user?.id)
+      .eq("tipo_conta", "principal")
+      .single();
+
+    if (!account) {
+      toast.error("Conta principal não encontrada");
+      setLoading(false);
+      return;
+    }
+
+    // Verificar saldo se for usar saldo
+    if (metodoPagamento === "saldo" && account.saldo_atual < valorNum) {
+      toast.error("Saldo insuficiente");
+      setLoading(false);
+      return;
+    }
+
+    // Criar transação de saída (PIX enviado)
+    const { error: transError } = await supabase
+      .from("transactions")
+      .insert({
+        user_id: user?.id,
+        account_id: account.id,
+        descricao: `PIX para ${chave} ${metodoPagamento === "cartao" ? "(via Cartão)" : ""}`,
+        valor: valorNum,
+        tipo: "saida",
+        categoria: "Transferência",
+        modo: "pessoal"
       });
 
-      if (error) throw error;
-      if (!data?.success) throw new Error(data?.error || "Falha ao criar pagamento PIX");
+    if (transError) {
+      toast.error("Erro ao realizar transferência");
+      setLoading(false);
+      return;
+    }
 
-      console.log("Pagamento PIX criado:", data);
-
-      // Armazenar dados do PIX para mostrar QR Code
-      setPixPaymentData({
-        pixCode: data.pixCode,
-        qrCodeUrl: data.qrCodeUrl,
-        expiresAt: data.expiresAt,
-        hostedInstructionsUrl: data.hostedInstructionsUrl
+    // Registrar em services_logs
+    await supabase
+      .from("services_logs")
+      .insert({
+        user_id: user?.id,
+        tipo_servico: "PIX",
+        detalhes: {
+          chave_destino: chave,
+          valor: valorNum,
+          metodo_pagamento: metodoPagamento,
+          data: new Date().toISOString()
+        },
+        valor: valorNum
       });
 
-      toast.success("QR Code PIX gerado! Escaneie para pagar");
-    } catch (error: any) {
-      console.error("Erro ao criar transferência PIX:", error);
-      toast.error(error.message || "Erro ao processar transferência PIX");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    toast.success("Transferência PIX realizada com sucesso!", {
+      description: `R$ ${valorNum.toFixed(2)} transferido para ${chave}`
+    });
 
-  const handleCopyPixCode = () => {
-    if (pixPaymentData?.pixCode) {
-      navigator.clipboard.writeText(pixPaymentData.pixCode);
-      toast.success("Código PIX copiado!");
-    }
-  };
-
-  const handleReset = () => {
-    setChavePix("");
+    setLoading(false);
+    setChave("");
     setValor("");
-    setPixPaymentData(null);
-  };
-
-  const handleClose = () => {
-    handleReset();
+    setNumeroCartao("");
+    setCvv("");
+    setValidade("");
+    setMetodoPagamento("saldo");
     onClose();
   };
 
@@ -102,112 +121,133 @@ const PixModal = ({ open, onClose }: PixModalProps) => {
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[500px] bg-background border-border">
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-foreground">
-            {pixPaymentData ? "QR Code PIX Gerado" : "Transferência PIX"}
+          <DialogTitle className="flex items-center gap-2">
+            <CreditCard className="h-5 w-5 text-primary" />
+            PIX - Transferência Instantânea
           </DialogTitle>
-          <DialogDescription className="text-muted-foreground">
-            {pixPaymentData ? "Escaneie o QR Code ou copie o código PIX" : "Realize transferências instantâneas via PIX"}
+          <DialogDescription>
+            Transfira dinheiro de forma rápida e segura usando chave PIX
           </DialogDescription>
         </DialogHeader>
 
-        {!pixPaymentData ? (
-          <div className="space-y-4 py-4">
-            <div>
-              <label className="text-sm font-medium text-foreground mb-2 block">
-                Chave PIX
-              </label>
+        <div className="space-y-6">
+          {/* Dados da Transferência */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="chave">Chave PIX Destino *</Label>
               <Input
-                placeholder="E-mail, CPF, CNPJ, telefone ou chave aleatória"
-                value={chavePix}
-                onChange={(e) => setChavePix(e.target.value)}
-                className="bg-muted border-border"
+                id="chave"
+                placeholder="CPF, e-mail, telefone ou chave aleatória"
+                value={chave}
+                onChange={(e) => setChave(e.target.value)}
               />
             </div>
 
-            <div>
-              <label className="text-sm font-medium text-foreground mb-2 block">
-                Valor (R$)
-              </label>
+            <div className="space-y-2">
+              <Label htmlFor="valor">Valor (R$) *</Label>
               <Input
+                id="valor"
                 type="number"
-                step="0.01"
-                placeholder="0,00"
+                placeholder="0.00"
                 value={valor}
                 onChange={(e) => setValor(e.target.value)}
-                className="bg-muted border-border"
+                min="0"
+                step="0.01"
               />
             </div>
 
-            {valor && parseFloat(valor) > 0 && (
-              <div className="bg-muted p-4 rounded-lg space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Valor da transferência:</span>
-                  <span className="font-medium text-foreground">{formatCurrency(parseFloat(valor))}</span>
+            <div className="space-y-2">
+              <Label>Método de Pagamento</Label>
+              <RadioGroup value={metodoPagamento} onValueChange={(v) => setMetodoPagamento(v as "saldo" | "cartao")}>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="saldo" id="pix-saldo" />
+                  <Label htmlFor="pix-saldo" className="cursor-pointer">Usar Saldo da Conta</Label>
                 </div>
-              </div>
-            )}
-
-            <Button 
-              onClick={handleTransferir} 
-              className="w-full" 
-              disabled={isLoading || !chavePix || !valor || parseFloat(valor) <= 0}
-            >
-              {isLoading ? "Gerando PIX..." : "Gerar QR Code PIX"}
-            </Button>
-          </div>
-        ) : (
-          <div className="space-y-4 py-4">
-            <div className="flex flex-col items-center space-y-4">
-              <div className="bg-white p-4 rounded-lg">
-                <img 
-                  src={pixPaymentData.qrCodeUrl} 
-                  alt="QR Code PIX" 
-                  className="w-64 h-64"
-                />
-              </div>
-
-              <div className="w-full bg-muted p-4 rounded-lg space-y-2">
-                <p className="text-sm font-medium text-foreground">Código PIX (Copiar e Colar):</p>
-                <div className="flex gap-2">
-                  <Input
-                    value={pixPaymentData.pixCode}
-                    readOnly
-                    className="bg-background border-border text-xs font-mono"
-                  />
-                  <Button onClick={handleCopyPixCode} size="sm" variant="outline">
-                    <Copy className="h-4 w-4" />
-                  </Button>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="cartao" id="pix-cartao" />
+                  <Label htmlFor="pix-cartao" className="cursor-pointer">Cartão de Crédito</Label>
                 </div>
-              </div>
-
-              <div className="text-center text-sm text-muted-foreground space-y-1">
-                <p>Escaneie o QR Code ou copie o código PIX no seu banco</p>
-                <p className="font-medium">Expira em: {new Date(pixPaymentData.expiresAt * 1000).toLocaleString('pt-BR')}</p>
-              </div>
-
-              <div className="flex gap-2 w-full">
-                <Button 
-                  onClick={() => window.open(pixPaymentData.hostedInstructionsUrl, '_blank')}
-                  variant="outline"
-                  className="flex-1"
-                >
-                  Ver Instruções
-                </Button>
-                <Button 
-                  onClick={handleReset}
-                  variant="outline"
-                  className="flex-1"
-                >
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Nova Transferência
-                </Button>
-              </div>
+              </RadioGroup>
             </div>
+
+            {/* Dados do Cartão */}
+            {metodoPagamento === "cartao" && (
+              <Card className="bg-muted/30">
+                <CardContent className="pt-6 space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="numero-cartao">Número do Cartão *</Label>
+                    <Input
+                      id="numero-cartao"
+                      placeholder="0000 0000 0000 0000"
+                      value={numeroCartao}
+                      onChange={(e) => setNumeroCartao(e.target.value)}
+                      maxLength={19}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="validade">Validade *</Label>
+                      <Input
+                        id="validade"
+                        placeholder="MM/AA"
+                        value={validade}
+                        onChange={(e) => setValidade(e.target.value)}
+                        maxLength={5}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="cvv">CVV *</Label>
+                      <Input
+                        id="cvv"
+                        placeholder="000"
+                        value={cvv}
+                        onChange={(e) => setCvv(e.target.value)}
+                        maxLength={4}
+                        type="password"
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
-        )}
+
+          {/* Resumo */}
+          {valor && parseFloat(valor) > 0 && (
+            <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
+              <CardContent className="py-4">
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Destinatário:</span>
+                    <span className="font-semibold">{chave || "---"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Valor:</span>
+                    <span className="font-semibold text-primary">{formatCurrency(parseFloat(valor))}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Método:</span>
+                    <span className="font-semibold">{metodoPagamento === "saldo" ? "Saldo da Conta" : "Cartão de Crédito"}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Botão de Confirmação */}
+          <Button 
+            onClick={handleTransferir} 
+            disabled={loading || !chave || !valor}
+            className="w-full gap-2"
+            size="lg"
+          >
+            <Check className="h-4 w-4" />
+            {loading ? "Processando..." : "Confirmar Transferência"}
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );
