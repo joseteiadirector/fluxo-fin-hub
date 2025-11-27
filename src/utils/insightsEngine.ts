@@ -31,17 +31,17 @@ class DecisionTreeAnalyzer {
 
     // Calcular métricas
     const gastosMes = transactions
-      .filter(t => t.tipo === "despesa")
+      .filter(t => t.tipo === "saida")
       .reduce((sum, t) => sum + Number(t.valor), 0);
 
     const entradas = transactions
-      .filter(t => t.tipo === "receita")
+      .filter(t => t.tipo === "entrada")
       .reduce((sum, t) => sum + Number(t.valor), 0);
 
     // Gastos por categoria
     const gastosPorCategoria: { [key: string]: number } = {};
     transactions
-      .filter(t => t.tipo === "despesa")
+      .filter(t => t.tipo === "saida")
       .forEach(t => {
         gastosPorCategoria[t.categoria] = (gastosPorCategoria[t.categoria] || 0) + Number(t.valor);
       });
@@ -186,14 +186,14 @@ class HeuristicAnalyzer {
     // HEURÍSTICA 2: Crescimento rápido em categoria
     const gastosPorCategoria30d: { [key: string]: number } = {};
     ultimos30Dias
-      .filter(t => t.tipo === "despesa")
+      .filter(t => t.tipo === "saida")
       .forEach(t => {
         gastosPorCategoria30d[t.categoria] = (gastosPorCategoria30d[t.categoria] || 0) + Number(t.valor);
       });
 
     const gastosPorCategoria7d: { [key: string]: number } = {};
     ultimos7Dias
-      .filter(t => t.tipo === "despesa")
+      .filter(t => t.tipo === "saida")
       .forEach(t => {
         gastosPorCategoria7d[t.categoria] = (gastosPorCategoria7d[t.categoria] || 0) + Number(t.valor);
       });
@@ -218,13 +218,13 @@ class HeuristicAnalyzer {
     // HEURÍSTICA 3: Padrão de gastos noturnos/finais de semana
     const gastosFinaisSemana = transactions.filter(t => {
       const dia = new Date(t.data).getDay();
-      return t.tipo === "despesa" && (dia === 0 || dia === 6);
+      return t.tipo === "saida" && (dia === 0 || dia === 6);
     });
 
     if (gastosFinaisSemana.length > 0) {
       const totalFinsSemana = gastosFinaisSemana.reduce((sum, t) => sum + Number(t.valor), 0);
       const totalGeral = transactions
-        .filter(t => t.tipo === "despesa")
+        .filter(t => t.tipo === "saida")
         .reduce((sum, t) => sum + Number(t.valor), 0);
       
       const proporcao = totalGeral > 0 ? (totalFinsSemana / totalGeral) * 100 : 0;
