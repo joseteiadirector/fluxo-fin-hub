@@ -127,8 +127,9 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
       const chartDiario = Object.entries(gastosPorDia).map(([dia, valor]) => ({
         dia: Number(dia),
         valor: Number(valor.toFixed(2))
-      })).sort((a, b) => a.dia - b.dia);
-      setGastosDiarios(chartDiario);
+      }));
+      // Create mutable copy to avoid "read-only" errors in Recharts
+      setGastosDiarios([...chartDiario].sort((a, b) => a.dia - b.dia));
 
       // Distribuição por categoria
       const gastosPorCategoria: { [key: string]: number } = {};
@@ -142,7 +143,8 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
         categoria,
         valor: Number(valor.toFixed(2))
       }));
-      setDistribuicaoCategoria(chartCategoria);
+      // Create mutable copy to avoid "read-only" errors in Recharts
+      setDistribuicaoCategoria([...chartCategoria]);
 
       // Tendência mensal (últimos 6 meses + previsão)
       await calcularTendenciaMensal(modo);
@@ -198,7 +200,8 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
       previsao: Number(Math.max(0, previsaoProxMes).toFixed(2))
     });
 
-    setTendenciaMensal(meses);
+    // Create mutable copy to avoid "read-only" errors in Recharts
+    setTendenciaMensal([...meses]);
   };
 
   const formatCurrency = (value: number) => {
