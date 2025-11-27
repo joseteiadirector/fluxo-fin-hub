@@ -247,7 +247,10 @@ export default function Metas() {
 
         {/* Lista de Metas */}
         {loading ? (
-          <div className="text-center py-8">Carregando metas...</div>
+          <div className="text-center py-12 text-muted-foreground">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <p className="mt-4">Carregando metas...</p>
+          </div>
         ) : metas.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center">
@@ -262,7 +265,7 @@ export default function Metas() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {metas.map((meta) => (
-              <Card key={meta.id}>
+              <Card key={meta.id} className="animate-scale-in group cursor-pointer bg-gradient-to-br from-card to-card/50">
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div className="flex items-center gap-2">
