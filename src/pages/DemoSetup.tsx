@@ -2,14 +2,16 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 import { seedExampleData, clearAllData, SeedDataResult } from "@/utils/seedData";
 import { InsightsEngine } from "@/utils/insightsEngine";
 import { toast } from "sonner";
-import { Database, Trash2, Sparkles, CheckCircle2, XCircle } from "lucide-react";
+import { Database, Trash2, Sparkles, CheckCircle2, XCircle, ArrowLeft, Home } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const DemoSetup = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SeedDataResult | null>(null);
   const insightsEngine = new InsightsEngine();
@@ -80,14 +82,46 @@ const DemoSetup = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-6">
       <div className="max-w-4xl mx-auto space-y-6">
+        <div className="flex items-center justify-between">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate('/')}
+            className="gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Voltar ao Dashboard
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={() => navigate('/')}
+            className="gap-2"
+          >
+            <Home className="h-4 w-4" />
+            Início
+          </Button>
+        </div>
+        
         <div className="text-center space-y-2">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
             Configuração Demo - Équilibra
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-lg">
             Configure dados de exemplo para demonstrar todas as funcionalidades
           </p>
         </div>
+        
+        <Alert className="border-primary/50 bg-primary/5">
+          <Sparkles className="h-4 w-4 text-primary" />
+          <AlertDescription>
+            <p className="font-semibold mb-2">📝 Como Usar Esta Página</p>
+            <ol className="text-sm space-y-1 ml-4 list-decimal">
+              <li>Clique em "Configurar Demo" para popular o banco com 18 transações de exemplo</li>
+              <li>Aguarde a geração automática de insights de IA (Regressão Linear + Árvore Decisão + Heurísticas)</li>
+              <li>Explore o Dashboard, Extrato, Serviços e Insights com dados realistas!</li>
+              <li>Para recomeçar, use "Limpar Tudo" e configure novamente</li>
+            </ol>
+          </AlertDescription>
+        </Alert>
 
         <Card className="border-primary/20 bg-card/50 backdrop-blur">
           <CardHeader>

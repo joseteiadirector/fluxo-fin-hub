@@ -1,6 +1,12 @@
 import { ReactNode, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { 
   Wallet, 
   Home, 
@@ -10,7 +16,8 @@ import {
   LayoutDashboard,
   Receipt,
   Lightbulb,
-  CreditCard
+  CreditCard,
+  HelpCircle
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Link, useLocation } from "react-router-dom";
@@ -44,29 +51,55 @@ const Layout = ({ children, modoTrabalho, setModoTrabalho }: LayoutProps) => {
             </div>
             
             {/* Toggle Trabalho/Pessoal */}
-            <div className="flex items-center gap-3 bg-muted/50 rounded-full px-4 py-2">
-              <div className={`flex items-center gap-2 transition-opacity ${!modoTrabalho ? 'opacity-50' : ''}`}>
-                <Home className="h-4 w-4" />
-                <span className="text-sm font-medium">Pessoal</span>
-              </div>
-              <Switch 
-                checked={modoTrabalho} 
-                onCheckedChange={setModoTrabalho}
-                className="data-[state=checked]:bg-primary"
-              />
-              <div className={`flex items-center gap-2 transition-opacity ${modoTrabalho ? 'opacity-50' : ''}`}>
-                <Briefcase className="h-4 w-4" />
-                <span className="text-sm font-medium">Trabalho</span>
-              </div>
-            </div>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-3 bg-muted/50 rounded-full px-4 py-2 cursor-help">
+                    <div className={`flex items-center gap-2 transition-opacity ${!modoTrabalho ? 'opacity-50' : ''}`}>
+                      <Home className="h-4 w-4" />
+                      <span className="text-sm font-medium">Pessoal</span>
+                    </div>
+                    <Switch 
+                      checked={modoTrabalho} 
+                      onCheckedChange={setModoTrabalho}
+                      className="data-[state=checked]:bg-primary"
+                    />
+                    <div className={`flex items-center gap-2 transition-opacity ${modoTrabalho ? 'opacity-50' : ''}`}>
+                      <Briefcase className="h-4 w-4" />
+                      <span className="text-sm font-medium">Trabalho</span>
+                    </div>
+                    <HelpCircle className="h-4 w-4 text-muted-foreground ml-1" />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs">
+                  <p className="font-semibold mb-1">Modo Pessoal vs Trabalho</p>
+                  <p className="text-sm">Separe suas finanças pessoais (despesas do dia a dia) das profissionais (gastos de trabalho/freelance). O app filtra transações, insights e relatórios automaticamente!</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
 
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon">
-                <Bell className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon" onClick={() => signOut()}>
-                <LogOut className="h-5 w-5" />
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <Bell className="h-5 w-5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Notificações</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" onClick={() => signOut()}>
+                      <LogOut className="h-5 w-5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Sair</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </div>
         </div>
