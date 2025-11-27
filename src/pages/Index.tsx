@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useInitialData } from "@/hooks/useInitialData";
 import { Link, useNavigate } from "react-router-dom";
 import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { toast } from "sonner";
 
 interface DashboardProps {
   modoTrabalho: boolean;
@@ -26,7 +27,16 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
   const COLORS = ['#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#ef4444'];
 
   useEffect(() => {
-    if (user) {
+    if (initialLoading) {
+      toast.loading("Preparando seu dashboard...", { id: "loading-data" });
+    } else if (!initialLoading && hasData) {
+      toast.dismiss("loading-data");
+      toast.success("Dashboard atualizado com dados reais!");
+    }
+  }, [initialLoading, hasData]);
+
+  useEffect(() => {
+    if (user && hasData) {
       fetchDashboardData();
       
       // Configurar realtime para atualizações automáticas
@@ -58,10 +68,12 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
       .select("saldo_atual")
       .eq("user_id", user?.id)
       .eq("tipo_conta", "principal")
-      .single();
+      .maybeSingle();
 
     if (accounts) {
       setSaldoAtual(Number(accounts.saldo_atual));
+    } else {
+      setSaldoAtual(0);
     }
 
     // Buscar transações do mês atual
@@ -76,7 +88,7 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
       .gte("data", firstDay.toISOString())
       .order("data", { ascending: true });
 
-    if (transactions) {
+    if (transactions && transactions.length > 0) {
       // Gastos totais do mês
       const gastos = transactions
         .filter(t => t.tipo === "despesa")
@@ -84,10 +96,18 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
       
       setGastosMes(gastos);
       
-      // Previsão simples baseada na proporção do mês
+      // Receitas do mês
+      const receitas = transactions
+        .filter(t => t.tipo === "receita")
+        .reduce((sum, t) => sum + Number(t.valor), 0);
+      
+      // Previsão baseada no saldo atual e média de gastos
       const dayOfMonth = now.getDate();
       const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-      const projecao = saldoAtual - (gastos / dayOfMonth) * (daysInMonth - dayOfMonth);
+      const mediaDiaria = dayOfMonth > 0 ? gastos / dayOfMonth : 0;
+      const projecaoGastos = mediaDiaria * (daysInMonth - dayOfMonth);
+      const saldoAtualCalculado = accounts ? Number(accounts.saldo_atual) : 0;
+      const projecao = saldoAtualCalculado - projecaoGastos;
       setPrevisaoMes(projecao);
 
       // Processar gastos diários
@@ -121,6 +141,13 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
 
       // Tendência mensal (últimos 6 meses + previsão)
       await calcularTendenciaMensal(modo);
+    } else {
+      // Se não há transações, zerar valores
+      setGastosMes(0);
+      setPrevisaoMes(accounts ? Number(accounts.saldo_atual) : 0);
+      setGastosDiarios([]);
+      setDistribuicaoCategoria([]);
+      setTendenciaMensal([]);
     }
   };
 

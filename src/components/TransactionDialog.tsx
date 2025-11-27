@@ -30,6 +30,7 @@ const TransactionDialog = ({ open, onClose, modoTrabalho, onSuccess }: Transacti
     "Alimentação",
     "Transporte",
     "Moradia",
+    "Utilidades",
     "Saúde",
     "Educação",
     "Lazer",

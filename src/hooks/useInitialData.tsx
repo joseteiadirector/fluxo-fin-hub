@@ -44,22 +44,22 @@ export const useInitialData = () => {
         accounts = [newAccount];
       }
 
-      // Verificar se usuário já tem transações
-      const { data: transactions } = await supabase
+      // Verificar quantas transações o usuário tem
+      const { data: transactions, count } = await supabase
         .from("transactions")
-        .select("id")
-        .eq("user_id", user?.id)
-        .limit(1);
+        .select("id", { count: 'exact' })
+        .eq("user_id", user?.id);
 
-      if (!transactions || transactions.length === 0) {
-        // Popular com dados de demonstração
+      // Se tem menos de 10 transações, popular com dados
+      if (!transactions || !count || count < 10) {
+        console.log("🔄 Gerando transações automáticas para o protótipo...");
         await populateInitialData();
         setHasData(true);
         
-        // Mostrar mensagem explicativa
+        // Forçar reload da página para atualizar todos os dados
         setTimeout(() => {
-          console.log("✅ Protótipo inicializado com dados fictícios para demonstração!");
-        }, 1000);
+          window.location.reload();
+        }, 500);
       } else {
         setHasData(true);
       }
