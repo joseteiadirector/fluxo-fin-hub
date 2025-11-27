@@ -187,13 +187,11 @@ Prioridades: 1 (urgente), 2 (importante), 3 (informativo)`
                           description: "1=urgente, 2=importante, 3=informativo"
                         }
                       },
-                      required: ["titulo", "mensagem", "tipo", "origem", "prioridade"],
-                      additionalProperties: false
+                      required: ["titulo", "mensagem", "tipo", "origem", "prioridade"]
                     }
                   }
                 },
-                required: ["insights"],
-                additionalProperties: false
+                required: ["insights"]
               }
             }
           }
