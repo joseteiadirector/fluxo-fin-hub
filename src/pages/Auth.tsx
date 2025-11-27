@@ -70,16 +70,17 @@ const Auth = () => {
 
   return (
     <div 
-      className="min-h-screen flex items-center justify-end p-8 pr-16 relative"
+      className="min-h-screen grid grid-cols-1 lg:grid-cols-2 relative"
       style={{
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
-        backgroundPosition: 'left center',
+        backgroundPosition: 'center left',
         backgroundRepeat: 'no-repeat'
       }}
     >
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent via-60% to-background/80" />
-      <Card className="w-full max-w-md relative z-10 shadow-2xl backdrop-blur-md bg-card/98">
+      <div className="hidden lg:block" />
+      <div className="flex items-center justify-center p-8 bg-background/90 backdrop-blur-md">
+      <Card className="w-full max-w-md shadow-2xl">
         <CardHeader className="space-y-3 text-center">
           <div className="mx-auto h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
             <Wallet className="h-6 w-6 text-primary" />
@@ -170,6 +171,7 @@ const Auth = () => {
           </Tabs>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 };
