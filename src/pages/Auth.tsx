@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Wallet } from "lucide-react";
 import { toast } from "sonner";
-import backgroundImage from "@/assets/background-hero.png";
+import backgroundImage from "@/assets/auth-background.jpg";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -78,7 +78,7 @@ const Auth = () => {
         backgroundRepeat: 'no-repeat'
       }}
     >
-      <div className="absolute inset-0 bg-black/30" />
+      <div className="absolute inset-0 bg-black/20" />
       <Card className="w-full max-w-md relative z-10 shadow-2xl">
         <CardHeader className="space-y-3 text-center">
           <div className="mx-auto h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
