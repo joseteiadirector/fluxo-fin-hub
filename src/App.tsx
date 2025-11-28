@@ -17,6 +17,7 @@ import Insights from "./pages/Insights";
 import Metas from "./pages/Metas";
 import Ofertas from "./pages/Ofertas";
 import Preferencias from "./pages/Preferencias";
+import FAQ from "./pages/FAQ";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -92,6 +93,14 @@ const AppRoutes = () => {
               element={
                 <ProtectedRoute>
                   <Preferencias />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/faq"
+              element={
+                <ProtectedRoute>
+                  <FAQ />
                 </ProtectedRoute>
               }
             />
