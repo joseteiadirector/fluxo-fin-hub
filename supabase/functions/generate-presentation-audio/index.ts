@@ -23,7 +23,7 @@ serve(async (req) => {
 
     console.log("Gerando áudio de apresentação...");
 
-    // Usando voz Alice (brasileira, feminina, suave)
+    // Usando voz Alice (brasileira, feminina, 30 anos) com máxima qualidade
     const response = await fetch("https://api.elevenlabs.io/v1/text-to-speech/Xb7hH8MSUJpSbSDYk0k2", {
       method: "POST",
       headers: {
@@ -32,10 +32,13 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         text: presentationText,
-        model_id: "eleven_turbo_v2",
+        model_id: "eleven_multilingual_v2",
+        language_code: "pt",
         voice_settings: {
-          stability: 0.5,
-          similarity_boost: 0.75
+          stability: 0.65,
+          similarity_boost: 0.85,
+          style: 0.4,
+          use_speaker_boost: true
         }
       }),
     });
