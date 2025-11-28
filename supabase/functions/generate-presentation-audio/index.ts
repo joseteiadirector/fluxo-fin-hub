@@ -18,21 +18,17 @@ serve(async (req) => {
     }
 
     const presentationText = `
-      Bem-vindo ao Équilibra, seu assistente financeiro universitário inteligente.
+      Bem-vindo ao Équilibra, seu assistente financeiro universitário.
       
-      O Équilibra foi desenvolvido especialmente para estudantes que trabalham, oferecendo uma solução completa para gerenciar suas finanças de forma eficiente e inteligente.
+      Desenvolvido para estudantes que trabalham, o Équilibra oferece separação automática entre gastos de Trabalho e Pessoais.
       
-      Com nosso sistema único de separação automática entre gastos de Trabalho e Pessoais, você mantém total controle sobre suas despesas em cada área da sua vida.
+      Recursos principais: análise financeira em tempo real, previsões de saldo mensal, e insights personalizados por inteligência artificial.
       
-      Nossa plataforma oferece análise financeira em tempo real, previsões inteligentes de saldo mensal usando regressão linear, e insights personalizados gerados por inteligência artificial.
+      Acesse serviços integrados: PIX, recarga, benefícios, cashback, seguros e empréstimos.
       
-      Acesse seis serviços financeiros integrados: PIX, recarga de celular, benefícios, cashback, seguros e empréstimos, tudo em um único lugar.
+      Defina metas por categoria, receba alertas inteligentes, e consulte nosso chatbot financeiro para orientações personalizadas.
       
-      Defina metas de gastos por categoria e receba alertas inteligentes quando se aproximar dos limites. Conte com nosso chatbot financeiro que analisa seus padrões de consumo e oferece orientações personalizadas.
-      
-      Visualize sua saúde financeira através de indicadores de humor que mostram sua situação atual de forma intuitiva: do dia, do mês e do período geral.
-      
-      Équilibra: equilibrando sua vida financeira enquanto você foca em seus estudos e carreira.
+      Équilibra: equilibrando sua vida financeira.
     `;
 
     console.log("Gerando áudio de apresentação...");
