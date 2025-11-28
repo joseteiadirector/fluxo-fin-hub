@@ -70,27 +70,6 @@ const Auth = () => {
     setLoading(false);
   };
 
-  const handleDevAccess = async () => {
-    setLoading(true);
-    
-    // Credenciais de desenvolvedor
-    const devEmail = "admin@equilibra.dev";
-    const devPassword = "admin123456";
-    
-    const { error } = await signIn(devEmail, devPassword);
-    
-    if (error) {
-      toast.error("Acesso dev não configurado", {
-        description: "Use o cadastro normal ou entre em contato com suporte."
-      });
-    } else {
-      toast.success("Acesso de desenvolvedor concedido!");
-      navigate("/");
-    }
-    
-    setLoading(false);
-  };
-
   return (
     <div 
       className="min-h-screen flex flex-col justify-between p-4 sm:p-8 lg:p-16 relative"
@@ -135,15 +114,6 @@ const Auth = () => {
                 className="text-base sm:text-lg px-6 sm:px-8 w-full sm:w-auto bg-white/10 backdrop-blur-sm text-white border-white/30 hover:bg-white/20"
               >
                 Cadastrar
-              </Button>
-              <Button 
-                size="lg" 
-                variant="secondary"
-                onClick={handleDevAccess}
-                disabled={loading}
-                className="text-base sm:text-lg px-6 sm:px-8 w-full sm:w-auto bg-primary/20 backdrop-blur-sm text-white border-primary/30 hover:bg-primary/30"
-              >
-                {loading ? "Entrando..." : "Acesso Dev"}
               </Button>
             </div>
             <div className="w-full">
