@@ -18,11 +18,7 @@ serve(async (req) => {
     }
 
     const presentationText = `
-      Bem-vindo ao Équilibra, seu assistente financeiro universitário.
-      
-      Separe automaticamente gastos de trabalho e pessoais, receba insights por inteligência artificial, e acesse serviços como PIX, recarga e benefícios.
-      
-      Defina metas, receba alertas, e equilibre sua vida financeira.
+      Équilibra: seu assistente financeiro universitário. Gerencie trabalho e vida pessoal com inteligência artificial. Equilíbrio financeiro ao seu alcance.
     `;
 
     console.log("Gerando áudio de apresentação...");
