@@ -125,8 +125,9 @@ const Auth = () => {
 
       {/* Formulário sobreposto quando aberto */}
       {showForm && (
-        <Card className="w-full max-w-md mx-4 sm:mx-0 sm:absolute sm:right-8 lg:right-16 top-1/2 sm:transform sm:-translate-y-1/2 bg-background shadow-2xl">
-          <CardHeader className="space-y-3">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <Card className="w-full max-w-md bg-background shadow-2xl">
+            <CardHeader className="space-y-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-xl sm:text-2xl">{isSignUp ? "Criar Conta" : "Entrar"}</CardTitle>
               <Button 
@@ -233,6 +234,7 @@ const Auth = () => {
           )}
         </CardContent>
       </Card>
+        </div>
       )}
     </div>
   );
