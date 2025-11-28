@@ -1,6 +1,7 @@
 import { ReactNode, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
   TooltipContent,
@@ -17,9 +18,11 @@ import {
   Receipt,
   Lightbulb,
   CreditCard,
-  HelpCircle
+  HelpCircle,
+  Shield
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useUserRole } from "@/hooks/useUserRole";
 import { Link, useLocation } from "react-router-dom";
 
 interface LayoutProps {
@@ -30,6 +33,7 @@ interface LayoutProps {
 
 const Layout = ({ children, modoTrabalho, setModoTrabalho }: LayoutProps) => {
   const { signOut } = useAuth();
+  const { isAdmin } = useUserRole();
   const location = useLocation();
 
   const navItems = [
@@ -51,6 +55,12 @@ const Layout = ({ children, modoTrabalho, setModoTrabalho }: LayoutProps) => {
             <div className="flex items-center gap-1.5 sm:gap-2">
               <Wallet className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
               <h1 className="text-lg sm:text-xl font-bold">Équilibra</h1>
+              {isAdmin && (
+                <Badge variant="default" className="gap-1 bg-primary/90 hover:bg-primary">
+                  <Shield className="h-3 w-3" />
+                  <span className="hidden sm:inline">Admin</span>
+                </Badge>
+              )}
             </div>
             
             {/* Toggle Trabalho/Pessoal */}
