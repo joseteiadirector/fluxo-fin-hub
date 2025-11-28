@@ -44,6 +44,7 @@ const Layout = ({ children, modoTrabalho, setModoTrabalho }: LayoutProps) => {
     { path: "/metas", icon: HelpCircle, label: "Metas" },
     { path: "/ofertas", icon: HelpCircle, label: "Ofertas" },
     { path: "/preferencias", icon: HelpCircle, label: "Config" },
+    { path: "/faq", icon: HelpCircle, label: "FAQ" },
   ];
 
   return (
