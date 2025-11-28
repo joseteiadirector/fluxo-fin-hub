@@ -20,20 +20,15 @@ serve(async (req) => {
     const presentationText = `
       Bem-vindo ao Équilibra, seu assistente financeiro universitário.
       
-      Desenvolvido para estudantes que trabalham, o Équilibra oferece separação automática entre gastos de Trabalho e Pessoais.
+      Separe automaticamente gastos de trabalho e pessoais, receba insights por inteligência artificial, e acesse serviços como PIX, recarga e benefícios.
       
-      Recursos principais: análise financeira em tempo real, previsões de saldo mensal, e insights personalizados por inteligência artificial.
-      
-      Acesse serviços integrados: PIX, recarga, benefícios, cashback, seguros e empréstimos.
-      
-      Defina metas por categoria, receba alertas inteligentes, e consulte nosso chatbot financeiro para orientações personalizadas.
-      
-      Équilibra: equilibrando sua vida financeira.
+      Defina metas, receba alertas, e equilibre sua vida financeira.
     `;
 
     console.log("Gerando áudio de apresentação...");
 
-    const response = await fetch("https://api.elevenlabs.io/v1/text-to-speech/FGY2WhTYpPnrIDTdsKH5", {
+    // Usando voz Alice (brasileira, feminina, suave)
+    const response = await fetch("https://api.elevenlabs.io/v1/text-to-speech/Xb7hH8MSUJpSbSDYk0k2", {
       method: "POST",
       headers: {
         "xi-api-key": ELEVENLABS_API_KEY,
@@ -43,9 +38,12 @@ serve(async (req) => {
         text: presentationText,
         model_id: "eleven_turbo_v2_5",
         voice_settings: {
-          stability: 0.5,
-          similarity_boost: 0.75,
+          stability: 0.6,
+          similarity_boost: 0.8,
+          style: 0.3,
+          use_speaker_boost: true
         },
+        language_code: "pt-br"
       }),
     });
 
