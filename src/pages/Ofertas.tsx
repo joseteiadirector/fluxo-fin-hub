@@ -185,6 +185,27 @@ export default function Ofertas() {
     }
   };
 
+  const aproveitarOferta = async (oferta: Oferta) => {
+    try {
+      // Desativa a oferta
+      const { error } = await supabase
+        .from("ofertas")
+        .update({ ativa: false })
+        .eq("id", oferta.id);
+
+      if (error) throw error;
+
+      toast.success("Oferta aproveitada!", {
+        description: `${oferta.titulo} foi aplicada à sua conta. Aproveite!`
+      });
+      
+      fetchOfertas();
+    } catch (error) {
+      console.error("Erro ao aproveitar oferta:", error);
+      toast.error("Erro ao aproveitar oferta");
+    }
+  };
+
   const getIconByType = (tipo: string) => {
     switch (tipo) {
       case "cashback": return <Percent className="w-6 h-6" />;
@@ -283,7 +304,7 @@ export default function Ofertas() {
           </Card>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {ofertas.map((oferta) => (
+            {ofertas.slice(0, 2).map((oferta) => (
               <Card key={oferta.id} className="animate-scale-in border-2 group cursor-pointer bg-gradient-to-br from-card to-card/50">
                 <CardHeader>
                   <div className="flex justify-between items-start mb-2">
@@ -337,7 +358,10 @@ export default function Ofertas() {
                   )}
 
                   <div className="flex gap-2">
-                    <Button className="flex-1">
+                    <Button 
+                      className="flex-1"
+                      onClick={() => aproveitarOferta(oferta)}
+                    >
                       Aproveitar Oferta
                     </Button>
                     <Button
