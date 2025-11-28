@@ -12,6 +12,7 @@ import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tool
 import { toast } from "sonner";
 import { useTheme } from "next-themes";
 import { FinancialMoodCard } from "@/components/FinancialMoodCard";
+import { PresentationAudio } from "@/components/PresentationAudio";
 
 interface DashboardProps {
   modoTrabalho: boolean;
@@ -234,6 +235,9 @@ const Index = ({ modoTrabalho }: DashboardProps) => {
           Bem-vindo ao seu assistente financeiro inteligente
         </p>
       </div>
+
+      {/* Apresentação de Áudio do Équilibra */}
+      <PresentationAudio />
 
       {/* Análise de IA Generativa */}
       <FinancialMoodCard />
