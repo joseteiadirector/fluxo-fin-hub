@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Volume2, VolumeX, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -51,7 +50,6 @@ export const PresentationAudio = () => {
       await newAudio.play();
       setAudio(newAudio);
       setIsPlaying(true);
-      toast.success("Reproduzindo apresentação");
 
     } catch (error) {
       console.error("Erro ao gerar apresentação:", error);
@@ -62,40 +60,29 @@ export const PresentationAudio = () => {
   };
 
   return (
-    <Card className="p-6 bg-gradient-to-br from-primary/10 to-secondary/10 border-primary/20">
-      <div className="flex flex-col sm:flex-row items-center gap-4">
-        <div className="flex-1 space-y-2">
-          <h3 className="text-lg font-semibold text-foreground">
-            🎙️ Apresentação do Équilibra
-          </h3>
-          <p className="text-sm text-muted-foreground">
-            Ouça uma apresentação completa sobre todas as funcionalidades do Équilibra
-          </p>
-        </div>
-        <Button
-          onClick={handlePlayPresentation}
-          disabled={isLoading}
-          size="lg"
-          className="gap-2 min-w-[140px]"
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="h-5 w-5 animate-spin" />
-              Gerando...
-            </>
-          ) : isPlaying ? (
-            <>
-              <VolumeX className="h-5 w-5" />
-              Parar
-            </>
-          ) : (
-            <>
-              <Volume2 className="h-5 w-5" />
-              Ouvir
-            </>
-          )}
-        </Button>
-      </div>
-    </Card>
+    <Button
+      onClick={handlePlayPresentation}
+      disabled={isLoading}
+      size="lg"
+      variant="outline"
+      className="gap-2 bg-white/10 backdrop-blur-sm text-white border-white/30 hover:bg-white/20"
+    >
+      {isLoading ? (
+        <>
+          <Loader2 className="h-5 w-5 animate-spin" />
+          Gerando...
+        </>
+      ) : isPlaying ? (
+        <>
+          <VolumeX className="h-5 w-5" />
+          Parar
+        </>
+      ) : (
+        <>
+          <Volume2 className="h-5 w-5" />
+          Ouvir
+        </>
+      )}
+    </Button>
   );
 };
