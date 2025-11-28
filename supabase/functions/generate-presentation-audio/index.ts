@@ -18,7 +18,7 @@ serve(async (req) => {
     }
 
     const presentationText = `
-      Équilibra: seu assistente financeiro universitário. Gerencie trabalho e vida pessoal com inteligência artificial. Equilíbrio financeiro ao seu alcance. Cadastre-se e faça login. Vamos começar?
+      Équilibra: seu assistente universitário. Gerencie trabalho e vida pessoal com inteligência artificial. Equilíbrio financeiro ao seu alcance. Cadastre-se e faça login. Vamos começar?
     `;
 
     console.log("Gerando áudio de apresentação...");
