@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Wallet, X } from "lucide-react";
 import { toast } from "sonner";
 import backgroundImage from "@/assets/auth-background.jpg";
+import { PresentationAudio } from "@/components/PresentationAudio";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -97,22 +98,27 @@ const Auth = () => {
         </p>
 
         {!showForm && (
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 sm:pt-6 w-full sm:w-auto px-4 sm:px-0">
-            <Button 
-              size="lg" 
-              onClick={() => { setShowForm(true); setIsSignUp(false); }}
-              className="text-base sm:text-lg px-6 sm:px-8 w-full sm:w-auto"
-            >
-              Entrar
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              onClick={() => { setShowForm(true); setIsSignUp(true); }}
-              className="text-base sm:text-lg px-6 sm:px-8 w-full sm:w-auto bg-white/10 backdrop-blur-sm text-white border-white/30 hover:bg-white/20"
-            >
-              Cadastrar
-            </Button>
+          <div className="space-y-4 pt-4 sm:pt-6 w-full max-w-2xl px-4 sm:px-0">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full">
+              <Button 
+                size="lg" 
+                onClick={() => { setShowForm(true); setIsSignUp(false); }}
+                className="text-base sm:text-lg px-6 sm:px-8 w-full sm:w-auto"
+              >
+                Entrar
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                onClick={() => { setShowForm(true); setIsSignUp(true); }}
+                className="text-base sm:text-lg px-6 sm:px-8 w-full sm:w-auto bg-white/10 backdrop-blur-sm text-white border-white/30 hover:bg-white/20"
+              >
+                Cadastrar
+              </Button>
+            </div>
+            <div className="w-full">
+              <PresentationAudio />
+            </div>
           </div>
         )}
       </div>
