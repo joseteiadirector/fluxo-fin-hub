@@ -62,10 +62,17 @@ serve(async (req) => {
     // Obter o áudio como array buffer
     const audioBuffer = await response.arrayBuffer();
     
-    // Converter para base64
-    const base64Audio = btoa(
-      String.fromCharCode(...new Uint8Array(audioBuffer))
-    );
+    // Converter para base64 em chunks para evitar stack overflow
+    const bytes = new Uint8Array(audioBuffer);
+    const chunkSize = 8192;
+    let base64Audio = '';
+    
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+      const chunk = bytes.slice(i, i + chunkSize);
+      base64Audio += String.fromCharCode.apply(null, Array.from(chunk));
+    }
+    
+    base64Audio = btoa(base64Audio);
 
     console.log("Áudio gerado com sucesso");
 
